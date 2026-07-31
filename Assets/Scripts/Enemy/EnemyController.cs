@@ -18,6 +18,7 @@ public class EnemyController : MonoBehaviour
 {
     private static readonly int WalkAnimationHash = Animator.StringToHash("walk");
     private static readonly int FallingAnimationHash = Animator.StringToHash("falling");
+    private static readonly int DeadAnimationHash = Animator.StringToHash("dead");
 
     [Header("Chase")]
     [SerializeField] private float _moveSpeed = 3.5f;
@@ -203,7 +204,7 @@ public class EnemyController : MonoBehaviour
         _rigidbody.isKinematic = true;
 
         CurrentState = EnemyState.Dead;
-        _animator.speed = 0f;
+        UpdateAnimationState();
     }
 
     private void ConfigureNavigation()
@@ -225,22 +226,20 @@ public class EnemyController : MonoBehaviour
         _animator.speed = 1f;
         _animator.SetBool(WalkAnimationHash, false);
         _animator.SetBool(FallingAnimationHash, false);
+        _animator.SetBool(DeadAnimationHash, false);
     }
 
     private void UpdateAnimationState()
     {
-        if (CurrentState == EnemyState.Dead)
-        {
-            return;
-        }
-
+        bool isDead = CurrentState == EnemyState.Dead;
         bool isFalling = CurrentState == EnemyState.Falling;
         bool isWalking = CurrentState == EnemyState.Chase &&
             _navigationVelocity.sqrMagnitude > 0.0001f;
 
         _animator.speed = 1f;
-        _animator.SetBool(WalkAnimationHash, isWalking);
-        _animator.SetBool(FallingAnimationHash, isFalling);
+        _animator.SetBool(WalkAnimationHash, isWalking && !isDead);
+        _animator.SetBool(FallingAnimationHash, isFalling && !isDead);
+        _animator.SetBool(DeadAnimationHash, isDead);
     }
 
     private void UpdateNavigationMovement()
