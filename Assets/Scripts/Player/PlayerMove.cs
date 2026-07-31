@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -12,6 +13,9 @@ public class PlayerMove : MonoBehaviour
     private GameInputActions _gameInputActions;
     private Vector2 _moveInputValue;
     private WorldModeManager _worldModeManager;
+    private readonly HashSet<Collider> _groundContacts = new();
+    private bool _isGrounded;
+    private bool _jumpConsumed;
 
     private void Awake(){
         _rigidbody = GetComponent<Rigidbody>();
@@ -52,7 +56,60 @@ public class PlayerMove : MonoBehaviour
     }
 
     private void OnJump(InputAction.CallbackContext context){
+        if (!_isGrounded || _jumpConsumed)
+        {
+            return;
+        }
+
+        _jumpConsumed = true;
         _rigidbody.AddForce(Vector3.up * _jumpForce, ForceMode.Impulse);
+    }
+
+    private void OnCollisionEnter(Collision collision)
+    {
+        UpdateGroundContact(collision);
+    }
+
+    private void OnCollisionStay(Collision collision)
+    {
+        UpdateGroundContact(collision);
+    }
+
+    private void OnCollisionExit(Collision collision)
+    {
+        _groundContacts.Remove(collision.collider);
+        _isGrounded = _groundContacts.Count > 0;
+    }
+
+    private void UpdateGroundContact(Collision collision)
+    {
+        bool hasGroundContact = false;
+
+        foreach (ContactPoint contact in collision.contacts)
+        {
+            if (Vector3.Dot(contact.normal, Vector3.up) > 0.5f)
+            {
+                hasGroundContact = true;
+                break;
+            }
+        }
+
+        if (hasGroundContact)
+        {
+            bool wasGrounded = _isGrounded;
+            _groundContacts.Add(collision.collider);
+            _isGrounded = true;
+
+            if (!wasGrounded && _rigidbody.linearVelocity.y <= 0.1f)
+            {
+                _jumpConsumed = false;
+            }
+        }
+        else
+        {
+            _groundContacts.Remove(collision.collider);
+            _isGrounded = _groundContacts.Count > 0;
+        }
     }
 
     private void OnSwitchMode(InputAction.CallbackContext context)
