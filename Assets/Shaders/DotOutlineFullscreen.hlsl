@@ -6,6 +6,15 @@
 
 TEXTURE2D_X(_BlitTexture);
 
+float _WorldModeVisualEnabled;
+float4 _WorldModeTransitionOrigin;
+float _WorldModeTransitionProgress;
+float _WorldModeTransitionFrom;
+float _WorldModeTransitionTo;
+float _WorldModeTransitionFeather;
+float4 _WorldModeShiroBackground;
+float4 _WorldModeKuroBackground;
+
 float3 DotOutlineSampleColor(float2 uv)
 {
     float2 stereoUv = UnityStereoTransformScreenSpaceTex(saturate(uv));
@@ -57,7 +66,49 @@ void DotOutline_float(float4 UV, out float3 Out)
     // カメラ背景にはドット化・減色・アウトラインを適用せず、元の色を維持する。
     if (DotOutlineIsBackground(centerDepth))
     {
-        Out = DotOutlineSampleColor(UV.xy);
+        float3 originalBackground = DotOutlineSampleColor(UV.xy);
+        if (_WorldModeVisualEnabled < 0.5)
+        {
+            Out = originalBackground;
+            return;
+        }
+
+        float feather = max(0.001, _WorldModeTransitionFeather);
+        float aspect = _ScreenParams.x / max(1.0, _ScreenParams.y);
+        float2 screenDelta = UV.xy - _WorldModeTransitionOrigin.xy;
+        screenDelta.x *= aspect;
+
+        float2 farthestCorner = max(
+            _WorldModeTransitionOrigin.xy,
+            1.0 - _WorldModeTransitionOrigin.xy
+        );
+        farthestCorner.x *= aspect;
+        float maximumRadius = length(farthestCorner);
+        float easedProgress = smoothstep(
+            0.0,
+            1.0,
+            saturate(_WorldModeTransitionProgress)
+        );
+        float radius = lerp(
+            -feather,
+            maximumRadius + feather,
+            easedProgress
+        );
+        float wave = 1.0 - smoothstep(
+            radius - feather,
+            radius + feather,
+            length(screenDelta)
+        );
+        float mode = lerp(
+            _WorldModeTransitionFrom,
+            _WorldModeTransitionTo,
+            wave
+        );
+        Out = lerp(
+            _WorldModeShiroBackground.rgb,
+            _WorldModeKuroBackground.rgb,
+            saturate(mode)
+        );
         return;
     }
 
