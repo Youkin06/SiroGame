@@ -432,8 +432,14 @@ public class EnemyController : MonoBehaviour
         {
             bool isFloor = contact.normal.y >= 0.5f;
             bool isBelowHole = contact.point.y < _holeCenter.y - 0.01f;
+            Collider landedCollider = contact.otherCollider;
+            DoorButton doorButton = landedCollider != null
+                ? landedCollider.GetComponentInParent<DoorButton>()
+                : null;
+            bool isDoorButtonPlate = doorButton != null &&
+                                     doorButton.IsPressPlateCollider(landedCollider);
 
-            if (isFloor && isBelowHole)
+            if (isFloor && (isBelowHole || isDoorButtonPlate))
             {
                 _hasLandedBelowHole = true;
             }

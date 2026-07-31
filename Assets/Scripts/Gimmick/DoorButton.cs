@@ -24,6 +24,15 @@ public sealed class DoorButton : MonoBehaviour
     private Animator _doorAnimator;
     private float _releasedLocalY;
 
+    /// <summary>
+    /// 指定されたColliderが、このボタンの押し板かどうかを返す。
+    /// Falling中のEnemyが押し板へ着地したことを判定するために使用する。
+    /// </summary>
+    public bool IsPressPlateCollider(Collider candidate)
+    {
+        return candidate != null && candidate == _pressPlateCollider;
+    }
+
     private void Awake()
     {
         ResolvePressPlate();
