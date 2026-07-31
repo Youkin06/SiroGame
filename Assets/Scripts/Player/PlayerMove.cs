@@ -11,9 +11,11 @@ public class PlayerMove : MonoBehaviour
     private Rigidbody _rigidbody;
     private GameInputActions _gameInputActions;
     private Vector2 _moveInputValue;
+    private WorldModeManager _worldModeManager;
 
     private void Awake(){
         _rigidbody = GetComponent<Rigidbody>();
+        _worldModeManager = FindFirstObjectByType<WorldModeManager>();
         // 地面との接触で横倒しにならないよう、前後・左右方向の回転を固定する。
         _rigidbody.constraints |= RigidbodyConstraints.FreezeRotationX | RigidbodyConstraints.FreezeRotationZ;
         _gameInputActions = new GameInputActions();
@@ -23,6 +25,7 @@ public class PlayerMove : MonoBehaviour
         _gameInputActions.Player.Move.performed += OnMove;
         _gameInputActions.Player.Move.canceled += OnMove;
         _gameInputActions.Player.Jump.performed += OnJump;
+        _gameInputActions.FindAction("Player/SwitchMode", throwIfNotFound: true).performed += OnSwitchMode;
 
     }
 
@@ -50,6 +53,17 @@ public class PlayerMove : MonoBehaviour
 
     private void OnJump(InputAction.CallbackContext context){
         _rigidbody.AddForce(Vector3.up * _jumpForce, ForceMode.Impulse);
+    }
+
+    private void OnSwitchMode(InputAction.CallbackContext context)
+    {
+        if (_worldModeManager == null)
+        {
+            Debug.LogError("シーン内に WorldModeManager が見つかりません。", this);
+            return;
+        }
+
+        _worldModeManager.ToggleMode();
     }
     
     void FixedUpdate()
