@@ -32,6 +32,9 @@ public class EnemyController : MonoBehaviour
     [FormerlySerializedAs("_fallForwardSpeed")]
     [SerializeField] private float _fallCenteringSpeed = 2f;
     [SerializeField] private float _fallDownwardSpeed = 4f;
+    [SerializeField] private float _deathCenterTolerance = 0.02f;
+    [SerializeField] private float _deathRotationTolerance = 2f;
+    [SerializeField, Range(0.5f, 1f)] private float _deathVisualScale = 0.85f;
 
     public EnemyState CurrentState { get; private set; } = EnemyState.Idle;
 
@@ -40,6 +43,7 @@ public class EnemyController : MonoBehaviour
     private NavMeshAgent _navMeshAgent;
     private Rigidbody _rigidbody;
     private Animator _animator;
+    private Vector3 _visualInitialScale;
     private Collider[] _bodyColliders;
     private Vector3 _holeCenter;
     private Vector3 _navigationVelocity;
@@ -47,6 +51,9 @@ public class EnemyController : MonoBehaviour
     private Vector3 _lastDestination = new(float.PositiveInfinity, 0f, 0f);
     private float _nextDestinationRefreshTime;
     private float _activeFallCenteringSpeed;
+    private Vector3 _deathFacingDirection;
+    private bool _hasReachedDeathZone;
+    private bool _hasLandedBelowHole;
 
     private void Awake()
     {
@@ -60,6 +67,9 @@ public class EnemyController : MonoBehaviour
         _navMeshAgent = GetComponentInChildren<NavMeshAgent>();
         _rigidbody = GetComponent<Rigidbody>();
         _animator = GetComponentInChildren<Animator>();
+        _visualInitialScale = _animator != null
+            ? _animator.transform.localScale
+            : Vector3.one;
         _bodyColliders = GetComponentsInChildren<Collider>();
     }
 
@@ -158,13 +168,21 @@ public class EnemyController : MonoBehaviour
     /// </summary>
     public void EnterFalling(Vector3 holeCenter)
     {
+        EnterFalling(new HoleFallArea(holeCenter, Vector2.one * 0.5f));
+    }
+
+    public void EnterFalling(HoleFallArea holeArea)
+    {
         if (CurrentState != EnemyState.Idle && CurrentState != EnemyState.Chase)
         {
             return;
         }
 
         Vector3 inheritedVelocity = _navigationVelocity;
-        _holeCenter = holeCenter;
+        _holeCenter = holeArea.Center;
+        _deathFacingDirection = holeArea.GetNearestDiagonal(transform.forward);
+        _hasReachedDeathZone = false;
+        _hasLandedBelowHole = false;
         _activeFallCenteringSpeed = Mathf.Max(
             _fallCenteringSpeed,
             new Vector2(inheritedVelocity.x, inheritedVelocity.z).magnitude
@@ -180,6 +198,14 @@ public class EnemyController : MonoBehaviour
 
         CurrentState = EnemyState.Falling;
         UpdateAnimationState();
+    }
+
+    public void NotifyEnteredDeathZone()
+    {
+        if (CurrentState == EnemyState.Falling)
+        {
+            _hasReachedDeathZone = true;
+        }
     }
 
     private void OnCollisionEnter(Collision collision)
@@ -204,6 +230,7 @@ public class EnemyController : MonoBehaviour
         _rigidbody.isKinematic = true;
 
         CurrentState = EnemyState.Dead;
+        _animator.transform.localScale = _visualInitialScale * _deathVisualScale;
         UpdateAnimationState();
     }
 
@@ -224,6 +251,7 @@ public class EnemyController : MonoBehaviour
     {
         _animator.applyRootMotion = false;
         _animator.speed = 1f;
+        _animator.transform.localScale = _visualInitialScale;
         _animator.SetBool(WalkAnimationHash, false);
         _animator.SetBool(FallingAnimationHash, false);
         _animator.SetBool(DeadAnimationHash, false);
@@ -249,10 +277,10 @@ public class EnemyController : MonoBehaviour
         if (HoleFallTrigger.TryFindCrossedHole(
                 _previousNavigationPosition,
                 currentPosition,
-                out Vector3 holeCenter
+                out HoleFallArea holeArea
             ))
         {
-            EnterFalling(holeCenter);
+            EnterFalling(holeArea);
             return;
         }
 
@@ -302,7 +330,11 @@ public class EnemyController : MonoBehaviour
 
         // 縁の床にまだ乗っている間は、強い下向き速度による摩擦を発生させない。
         // 穴の中心へ入ってから落下速度を与える。
-        if (toHoleCenter.sqrMagnitude <= 0.0025f)
+        if (_hasLandedBelowHole)
+        {
+            velocity.y = Mathf.Min(velocity.y, 0f);
+        }
+        else if (toHoleCenter.sqrMagnitude <= 0.0025f)
         {
             velocity.y = Mathf.Min(velocity.y, -_fallDownwardSpeed);
         }
@@ -313,6 +345,30 @@ public class EnemyController : MonoBehaviour
 
         _rigidbody.linearVelocity = velocity;
         _rigidbody.angularVelocity = Vector3.zero;
+
+        Quaternion targetRotation = Quaternion.LookRotation(
+            _deathFacingDirection,
+            Vector3.up
+        );
+        Quaternion nextRotation = Quaternion.RotateTowards(
+            _rigidbody.rotation,
+            targetRotation,
+            _rotationSpeed * Time.fixedDeltaTime
+        );
+        _rigidbody.MoveRotation(nextRotation);
+
+        bool isCentered = toHoleCenter.sqrMagnitude <=
+            _deathCenterTolerance * _deathCenterTolerance;
+        bool isAligned = Quaternion.Angle(nextRotation, targetRotation) <=
+            _deathRotationTolerance;
+
+        // 底床がある穴は着地を優先する。床がない穴ではDeathZoneを
+        // フォールバックとして使い、無限落下を防ぐ。
+        bool canDie = _hasLandedBelowHole || _hasReachedDeathZone;
+        if (canDie && isCentered && isAligned)
+        {
+            Die();
+        }
     }
 
     private void RefreshDestination(bool force)
@@ -379,8 +435,7 @@ public class EnemyController : MonoBehaviour
 
             if (isFloor && isBelowHole)
             {
-                Die();
-                return;
+                _hasLandedBelowHole = true;
             }
         }
     }
