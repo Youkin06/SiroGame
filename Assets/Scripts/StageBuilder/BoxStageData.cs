@@ -4,12 +4,20 @@ using UnityEngine;
 
 namespace SiroGame.StageBuilder
 {
+    public enum BoxStageCellType
+    {
+        Box,
+        Hole
+    }
+
     [Serializable]
     public sealed class BoxStageCell
     {
         [SerializeField] private Vector3Int _position;
+        [SerializeField] private BoxStageCellType _cellType;
         [SerializeField] private BoxRuleTile _tile;
         [SerializeField] private Vector3 _boxSize = Vector3.one;
+        [SerializeField] private float _holeDepth = 5f;
 
         public BoxStageCell(Vector3Int position, BoxRuleTile tile, Vector3 boxSize)
         {
@@ -19,13 +27,24 @@ namespace SiroGame.StageBuilder
         }
 
         public Vector3Int Position => _position;
+        public BoxStageCellType CellType => _cellType;
         public BoxRuleTile Tile => _tile;
         public Vector3 BoxSize => _boxSize;
+        public float HoleDepth => _holeDepth;
 
-        public void Set(BoxRuleTile tile, Vector3 boxSize)
+        public void SetBox(BoxRuleTile tile, Vector3 boxSize)
         {
+            _cellType = BoxStageCellType.Box;
             _tile = tile;
             _boxSize = boxSize;
+        }
+
+        public void SetHole(float holeDepth)
+        {
+            _cellType = BoxStageCellType.Hole;
+            _tile = null;
+            _boxSize = Vector3.one;
+            _holeDepth = holeDepth;
         }
     }
 
@@ -73,16 +92,41 @@ namespace SiroGame.StageBuilder
             if (index >= 0)
             {
                 BoxStageCell existing = _cells[index];
-                if (existing.Tile == tile && existing.BoxSize == safeSize)
+                if (existing.CellType == BoxStageCellType.Box &&
+                    existing.Tile == tile && existing.BoxSize == safeSize)
                 {
                     return false;
                 }
 
-                existing.Set(tile, safeSize);
+                existing.SetBox(tile, safeSize);
                 return true;
             }
 
             _cells.Add(new BoxStageCell(position, tile, safeSize));
+            return true;
+        }
+
+        public bool SetHole(Vector3Int position, float holeDepth)
+        {
+            float safeDepth = Mathf.Max(0.1f, holeDepth);
+            int index = FindCellIndex(position);
+
+            if (index >= 0)
+            {
+                BoxStageCell existing = _cells[index];
+                if (existing.CellType == BoxStageCellType.Hole &&
+                    Mathf.Approximately(existing.HoleDepth, safeDepth))
+                {
+                    return false;
+                }
+
+                existing.SetHole(safeDepth);
+                return true;
+            }
+
+            BoxStageCell hole = new BoxStageCell(position, null, Vector3.one);
+            hole.SetHole(safeDepth);
+            _cells.Add(hole);
             return true;
         }
 

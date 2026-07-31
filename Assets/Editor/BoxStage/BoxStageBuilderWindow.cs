@@ -1,16 +1,27 @@
 using SiroGame.StageBuilder;
+using Unity.AI.Navigation;
+using Unity.AI.Navigation.Editor;
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.AI;
 
 namespace SiroGame.Editor.StageBuilder
 {
     public sealed class BoxStageBuilderWindow : EditorWindow
     {
+        private enum PaintMode
+        {
+            Box,
+            Hole
+        }
+
         private const float MinimumSize = 0.01f;
 
         [SerializeField] private BoxStageData _stageData;
         [SerializeField] private BoxStageRoot _stageRoot;
+        [SerializeField] private PaintMode _paintMode;
         [SerializeField] private Vector3 _boxSize = Vector3.one;
+        [SerializeField] private float _holeDepth = 5f;
         [SerializeField] private int _currentLayer;
         [SerializeField] private int _selectedTileIndex;
         [SerializeField] private int _gridExtent = 10;
@@ -141,7 +152,20 @@ namespace SiroGame.Editor.StageBuilder
                 RebuildStage();
             }
 
-            _boxSize = ClampSize(EditorGUILayout.Vector3Field("Box Size", _boxSize));
+            if (_paintMode == PaintMode.Hole)
+            {
+                _holeDepth = Mathf.Max(
+                    0.1f,
+                    EditorGUILayout.FloatField("Hole Depth", _holeDepth)
+                );
+            }
+            else
+            {
+                _boxSize = ClampSize(
+                    EditorGUILayout.Vector3Field("Box Size", _boxSize)
+                );
+            }
+
             _currentLayer = EditorGUILayout.IntField("Y Layer", _currentLayer);
 
             using (new EditorGUILayout.HorizontalScope())
@@ -167,7 +191,7 @@ namespace SiroGame.Editor.StageBuilder
         {
             using (new EditorGUILayout.HorizontalScope())
             {
-                EditorGUILayout.LabelField("ボックスパレット", EditorStyles.boldLabel);
+                EditorGUILayout.LabelField("ボックス／穴パレット", EditorStyles.boldLabel);
                 if (GUILayout.Button("Rule Tileを作成", GUILayout.Width(130f)))
                 {
                     CreateRuleTile();
@@ -198,6 +222,8 @@ namespace SiroGame.Editor.StageBuilder
                 );
             }
 
+            EditorGUILayout.Space(4f);
+            DrawHolePaletteButton();
             EditorGUILayout.Space(4f);
 
             if (_stageData.TilePalette.Count == 0)
@@ -238,7 +264,7 @@ namespace SiroGame.Editor.StageBuilder
                 : null;
 
             GUIContent content = new GUIContent(label, thumbnail);
-            bool selected = _selectedTileIndex == index;
+            bool selected = _paintMode == PaintMode.Box && _selectedTileIndex == index;
             bool nextSelected = GUILayout.Toggle(
                 selected,
                 content,
@@ -249,7 +275,25 @@ namespace SiroGame.Editor.StageBuilder
 
             if (nextSelected && !selected)
             {
+                _paintMode = PaintMode.Box;
                 _selectedTileIndex = index;
+                SceneView.RepaintAll();
+            }
+        }
+
+        private void DrawHolePaletteButton()
+        {
+            bool selected = _paintMode == PaintMode.Hole;
+            bool nextSelected = GUILayout.Toggle(
+                selected,
+                new GUIContent("Hole", "床を生成せず、落下Triggerを生成します。"),
+                GUI.skin.button,
+                GUILayout.Height(40f)
+            );
+
+            if (nextSelected && !selected)
+            {
+                _paintMode = PaintMode.Hole;
                 SceneView.RepaintAll();
             }
         }
@@ -259,11 +303,35 @@ namespace SiroGame.Editor.StageBuilder
             EditorGUILayout.LabelField("生成", EditorStyles.boldLabel);
 
             bool canGenerate = HasValidStageBinding();
+            NavMeshSurface navMeshSurface = _stageRoot != null
+                ? _stageRoot.GetComponent<NavMeshSurface>()
+                : null;
+
+            if (_stageRoot != null && navMeshSurface == null)
+            {
+                EditorGUILayout.HelpBox(
+                    "Stage RootにNavMeshSurfaceをアタッチしてください。" +
+                    "コンポーネントは自動追加しません。",
+                    MessageType.Warning
+                );
+            }
+
             using (new EditorGUI.DisabledScope(!canGenerate))
             {
                 if (GUILayout.Button("Stage Dataから再生成"))
                 {
                     RebuildStage();
+                }
+
+                using (new EditorGUI.DisabledScope(
+                           navMeshSurface == null ||
+                           NavMeshAssetManager.instance.IsSurfaceBaking(navMeshSurface)
+                       ))
+                {
+                    if (GUILayout.Button("Stage Dataから再生成＋NavMeshベイク"))
+                    {
+                        RebuildAndBakeNavMesh(navMeshSurface);
+                    }
                 }
 
                 if (GUILayout.Button("配置データを全削除"))
@@ -280,7 +348,10 @@ namespace SiroGame.Editor.StageBuilder
                 "・左クリック／ドラッグ: 配置または置換\n" +
                 "・右クリック／ドラッグ: 削除\n" +
                 "・Altを押している間: Sceneビューのカメラ操作\n" +
-                "・同じマスを再配置すると、TileとBox Sizeを更新",
+                "・同じマスを再配置すると、BoxとHoleを相互に置換\n" +
+                "・Holeは物理床を生成せず、入口Trigger、死亡Trigger、" +
+                "NavMesh専用の透明床を自動生成\n" +
+                "・ステージ編集後は「再生成＋NavMeshベイク」を実行",
                 MessageType.Info
             );
         }
@@ -410,13 +481,20 @@ namespace SiroGame.Editor.StageBuilder
         {
             Color previousColor = Handles.color;
             Matrix4x4 previousMatrix = Handles.matrix;
-            Handles.color = GetSelectedTile() != null
-                ? new Color(0.2f, 1f, 0.35f, 0.9f)
-                : new Color(1f, 0.3f, 0.2f, 0.9f);
+            Handles.color = _paintMode == PaintMode.Hole
+                ? new Color(1f, 0.35f, 0.1f, 0.95f)
+                : new Color(0.2f, 1f, 0.35f, 0.9f);
             Handles.matrix = _stageRoot.transform.localToWorldMatrix;
 
             Vector3 localCenter = _stageRoot.transform.InverseTransformPoint(worldCenter);
-            Handles.DrawWireCube(localCenter, _boxSize);
+            Vector3 previewSize = _paintMode == PaintMode.Hole
+                ? new Vector3(
+                    _stageData.CellSize.x,
+                    Mathf.Max(0.05f, _stageData.CellSize.y * 0.1f),
+                    _stageData.CellSize.z
+                )
+                : _boxSize;
+            Handles.DrawWireCube(localCenter, previewSize);
 
             Handles.matrix = previousMatrix;
             Handles.color = previousColor;
@@ -445,9 +523,19 @@ namespace SiroGame.Editor.StageBuilder
             _lastEditedCell = cell;
             Undo.RecordObject(_stageData, erase ? "Erase Box Stage Cell" : "Paint Box Stage Cell");
 
-            bool changed = erase
-                ? _stageData.RemoveCell(cell)
-                : _stageData.SetCell(cell, GetSelectedTile(), _boxSize);
+            bool changed;
+            if (erase)
+            {
+                changed = _stageData.RemoveCell(cell);
+            }
+            else if (_paintMode == PaintMode.Hole)
+            {
+                changed = _stageData.SetHole(cell, _holeDepth);
+            }
+            else
+            {
+                changed = _stageData.SetCell(cell, GetSelectedTile(), _boxSize);
+            }
 
             if (!changed)
             {
@@ -571,6 +659,27 @@ namespace SiroGame.Editor.StageBuilder
             {
                 BoxStageGenerator.Rebuild(_stageRoot);
             }
+        }
+
+        private void RebuildAndBakeNavMesh(NavMeshSurface navMeshSurface)
+        {
+            if (!HasValidStageBinding() || navMeshSurface == null)
+            {
+                return;
+            }
+
+            RebuildStage();
+
+            Undo.RecordObject(navMeshSurface, "Configure Box Stage NavMesh Surface");
+            navMeshSurface.collectObjects = CollectObjects.Children;
+            navMeshSurface.useGeometry = NavMeshCollectGeometry.RenderMeshes;
+            navMeshSurface.ignoreNavMeshAgent = true;
+            navMeshSurface.ignoreNavMeshObstacle = true;
+            EditorUtility.SetDirty(navMeshSurface);
+
+            NavMeshAssetManager.instance.StartBakingSurfaces(
+                new Object[] { navMeshSurface }
+            );
         }
 
         private void OnUndoRedo()

@@ -10,7 +10,8 @@ namespace SiroGame.StageBuilder
         Empty,
         SameTile,
         DifferentTile,
-        AnyTile
+        AnyTile,
+        Hole
     }
 
     [Serializable]
@@ -55,6 +56,20 @@ namespace SiroGame.StageBuilder
         public Quaternion Rotation { get; }
     }
 
+    public readonly struct BoxRuleNeighbor
+    {
+        public BoxRuleNeighbor(BoxRuleTile tile, bool isHole)
+        {
+            Tile = tile;
+            IsHole = isHole;
+        }
+
+        public BoxRuleTile Tile { get; }
+        public bool IsHole { get; }
+        public bool HasTile => Tile != null;
+        public bool IsEmpty => !HasTile;
+    }
+
     /// <summary>
     /// 1種類のボックスと、その上下左右の接続ルールを定義するアセット。
     /// North はワールドの +Z、East は +X として扱う。
@@ -73,13 +88,13 @@ namespace SiroGame.StageBuilder
         public IReadOnlyList<BoxAdjacencyRule> Rules => _rules;
 
         public BoxRuleResult Resolve(
-            BoxRuleTile north,
-            BoxRuleTile east,
-            BoxRuleTile south,
-            BoxRuleTile west
+            BoxRuleNeighbor north,
+            BoxRuleNeighbor east,
+            BoxRuleNeighbor south,
+            BoxRuleNeighbor west
         )
         {
-            BoxRuleTile[] neighbors = { north, east, south, west };
+            BoxRuleNeighbor[] neighbors = { north, east, south, west };
 
             foreach (BoxAdjacencyRule rule in _rules)
             {
@@ -108,7 +123,7 @@ namespace SiroGame.StageBuilder
 
         private bool Matches(
             BoxAdjacencyRule rule,
-            IReadOnlyList<BoxRuleTile> neighbors,
+            IReadOnlyList<BoxRuleNeighbor> neighbors,
             int rotationStep
         )
         {
@@ -128,16 +143,17 @@ namespace SiroGame.StageBuilder
 
         private bool MatchesCondition(
             BoxNeighborCondition condition,
-            BoxRuleTile neighbor
+            BoxRuleNeighbor neighbor
         )
         {
             return condition switch
             {
                 BoxNeighborCondition.Any => true,
-                BoxNeighborCondition.Empty => neighbor == null,
-                BoxNeighborCondition.SameTile => neighbor == this,
-                BoxNeighborCondition.DifferentTile => neighbor != null && neighbor != this,
-                BoxNeighborCondition.AnyTile => neighbor != null,
+                BoxNeighborCondition.Empty => neighbor.IsEmpty,
+                BoxNeighborCondition.SameTile => neighbor.Tile == this,
+                BoxNeighborCondition.DifferentTile => neighbor.HasTile && neighbor.Tile != this,
+                BoxNeighborCondition.AnyTile => neighbor.HasTile,
+                BoxNeighborCondition.Hole => neighbor.IsHole,
                 _ => false
             };
         }

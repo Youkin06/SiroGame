@@ -3,12 +3,17 @@ using SiroGame.StageBuilder;
 using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
+using UnityEngine.Rendering;
 
 namespace SiroGame.Editor.StageBuilder
 {
     public static class BoxStageGenerator
     {
         private const string GeneratedRootName = "__GeneratedBoxes";
+        private const string NavigationProxyName = "NavigationProxy";
+        private const string NavigationProxyMaterialPath =
+            "Assets/Materials/NavigationProxyInvisible.mat";
+        private const float NavigationProxyThickness = 0.02f;
 
         public static void Rebuild(BoxStageRoot stageRoot)
         {
@@ -30,16 +35,22 @@ namespace SiroGame.Editor.StageBuilder
 
             foreach (BoxStageCell cell in stageData.Cells)
             {
+                if (cell.CellType == BoxStageCellType.Hole)
+                {
+                    CreateHole(cell, stageData.CellSize, generatedTransform);
+                    continue;
+                }
+
                 if (cell.Tile == null)
                 {
                     continue;
                 }
 
                 BoxRuleResult result = cell.Tile.Resolve(
-                    GetTile(cells, cell.Position + Vector3Int.forward),
-                    GetTile(cells, cell.Position + Vector3Int.right),
-                    GetTile(cells, cell.Position + Vector3Int.back),
-                    GetTile(cells, cell.Position + Vector3Int.left)
+                    GetNeighbor(cells, cell.Position + Vector3Int.forward),
+                    GetNeighbor(cells, cell.Position + Vector3Int.right),
+                    GetNeighbor(cells, cell.Position + Vector3Int.back),
+                    GetNeighbor(cells, cell.Position + Vector3Int.left)
                 );
 
                 if (result.Prefab == null)
@@ -109,14 +120,114 @@ namespace SiroGame.Editor.StageBuilder
             return result;
         }
 
-        private static BoxRuleTile GetTile(
+        private static BoxRuleNeighbor GetNeighbor(
             IReadOnlyDictionary<Vector3Int, BoxStageCell> cells,
             Vector3Int position
         )
         {
-            return cells.TryGetValue(position, out BoxStageCell cell)
-                ? cell.Tile
-                : null;
+            if (!cells.TryGetValue(position, out BoxStageCell cell))
+            {
+                return new BoxRuleNeighbor(null, false);
+            }
+
+            return cell.CellType == BoxStageCellType.Hole
+                ? new BoxRuleNeighbor(null, true)
+                : new BoxRuleNeighbor(cell.Tile, false);
+        }
+
+        private static void CreateHole(
+            BoxStageCell cell,
+            Vector3 cellSize,
+            Transform parent
+        )
+        {
+            GameObject holeRoot = new GameObject(
+                $"Hole_{cell.Position.x}_{cell.Position.y}_{cell.Position.z}"
+            );
+            Transform holeTransform = holeRoot.transform;
+            holeTransform.SetParent(parent, false);
+            holeTransform.localPosition = Vector3.Scale((Vector3)cell.Position, cellSize);
+
+            float deathTriggerMargin = Mathf.Clamp(
+                Mathf.Min(cellSize.x, cellSize.z) * 0.5f,
+                0.5f,
+                1f
+            );
+            float triggerHeight = Mathf.Max(0.5f, cellSize.y);
+            float openingY = cellSize.y * 0.5f;
+
+            GameObject fallTriggerObject = new GameObject("FallTrigger");
+            Transform fallTriggerTransform = fallTriggerObject.transform;
+            fallTriggerTransform.SetParent(holeTransform, false);
+            fallTriggerTransform.localPosition = Vector3.up * (
+                openingY + triggerHeight * 0.5f
+            );
+
+            BoxCollider fallCollider = fallTriggerObject.AddComponent<BoxCollider>();
+            fallCollider.isTrigger = true;
+            fallCollider.size = new Vector3(
+                cellSize.x,
+                triggerHeight,
+                cellSize.z
+            );
+            fallTriggerObject.AddComponent<HoleFallTrigger>();
+
+            CreateNavigationProxy(cellSize, openingY, holeTransform);
+
+            GameObject deathTriggerObject = new GameObject("DeathTrigger");
+            Transform deathTriggerTransform = deathTriggerObject.transform;
+            deathTriggerTransform.SetParent(holeTransform, false);
+            deathTriggerTransform.localPosition = Vector3.down * (
+                cell.HoleDepth - openingY
+            );
+
+            BoxCollider deathCollider = deathTriggerObject.AddComponent<BoxCollider>();
+            deathCollider.isTrigger = true;
+            deathCollider.size = new Vector3(
+                cellSize.x + deathTriggerMargin * 2f,
+                1f,
+                cellSize.z + deathTriggerMargin * 2f
+            );
+            deathTriggerObject.AddComponent<HoleDeathZone>();
+        }
+
+        private static void CreateNavigationProxy(
+            Vector3 cellSize,
+            float openingY,
+            Transform parent
+        )
+        {
+            GameObject proxyObject = new GameObject(NavigationProxyName);
+            Transform proxyTransform = proxyObject.transform;
+            proxyTransform.SetParent(parent, false);
+            proxyTransform.localPosition = Vector3.up * (
+                openingY - NavigationProxyThickness * 0.5f
+            );
+            proxyTransform.localScale = new Vector3(
+                cellSize.x,
+                NavigationProxyThickness,
+                cellSize.z
+            );
+
+            MeshFilter meshFilter = proxyObject.AddComponent<MeshFilter>();
+            meshFilter.sharedMesh = Resources.GetBuiltinResource<Mesh>("Cube.fbx");
+
+            MeshRenderer meshRenderer = proxyObject.AddComponent<MeshRenderer>();
+            meshRenderer.sharedMaterial = AssetDatabase.LoadAssetAtPath<Material>(
+                NavigationProxyMaterialPath
+            );
+            meshRenderer.forceRenderingOff = true;
+            meshRenderer.shadowCastingMode = ShadowCastingMode.Off;
+            meshRenderer.receiveShadows = false;
+
+            if (meshRenderer.sharedMaterial == null)
+            {
+                Debug.LogError(
+                    $"NavMesh用の不可視Materialが見つかりません: " +
+                    NavigationProxyMaterialPath,
+                    proxyObject
+                );
+            }
         }
 
         private static GameObject CreatePrefabInstance(GameObject prefab, Transform parent)

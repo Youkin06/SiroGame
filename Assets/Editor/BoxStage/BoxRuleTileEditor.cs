@@ -12,7 +12,8 @@ namespace SiroGame.Editor.StageBuilder
 
             EditorGUILayout.HelpBox(
                 "Northは+Z、Eastは+Xです。Rulesは上から順に評価されます。\n" +
-                "Allow Rotationを有効にすると、同じルールを90度ずつ回転して照合します。",
+                "Allow Rotationを有効にすると、同じルールを90度ずつ回転して照合します。\n" +
+                "HoleはEmptyにも一致します。穴専用ルールはEmptyルールより上に置いてください。",
                 MessageType.Info
             );
 
