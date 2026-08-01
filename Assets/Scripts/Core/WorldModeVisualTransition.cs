@@ -29,8 +29,11 @@ public sealed class WorldModeVisualTransition : MonoBehaviour
 
     [SerializeField, Min(0.01f)] private float _transitionDuration = 0.6f;
     [SerializeField, Range(0.001f, 0.2f)] private float _edgeSoftness = 0.04f;
-    [SerializeField] private Color _shiroBackground = Color.black;
-    [SerializeField] private Color _kuroBackground = Color.white;
+    [Header("Background Colors")]
+    [InspectorName("シロ背景色（暗い灰色）")]
+    [SerializeField] private Color _shiroBackground = new(0.12f, 0.12f, 0.12f, 1f);
+    [InspectorName("クロ背景色（明るい灰色）")]
+    [SerializeField] private Color _kuroBackground = new(0.88f, 0.88f, 0.88f, 1f);
 
     public bool IsTransitioning { get; private set; }
     public float TransitionProgress => _progress;

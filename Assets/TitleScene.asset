@@ -311,3 +311,58 @@ MonoBehaviour:
     _tile: {fileID: 11400000, guid: 88c65eca82c0f46399dd5ffaf0613790, type: 2}
     _boxSize: {x: 1, y: 1, z: 1}
     _holeDepth: 5
+  - _position: {x: 2, y: -5, z: -1}
+    _cellType: 0
+    _tile: {fileID: 11400000, guid: 88c65eca82c0f46399dd5ffaf0613790, type: 2}
+    _boxSize: {x: 1, y: 1, z: 1}
+    _holeDepth: 5
+  - _position: {x: 3, y: -5, z: -2}
+    _cellType: 0
+    _tile: {fileID: 11400000, guid: 88c65eca82c0f46399dd5ffaf0613790, type: 2}
+    _boxSize: {x: 1, y: 1, z: 1}
+    _holeDepth: 5
+  - _position: {x: 4, y: -5, z: -3}
+    _cellType: 0
+    _tile: {fileID: 11400000, guid: 88c65eca82c0f46399dd5ffaf0613790, type: 2}
+    _boxSize: {x: 1, y: 1, z: 1}
+    _holeDepth: 5
+  - _position: {x: 5, y: -5, z: -3}
+    _cellType: 0
+    _tile: {fileID: 11400000, guid: 88c65eca82c0f46399dd5ffaf0613790, type: 2}
+    _boxSize: {x: 1, y: 1, z: 1}
+    _holeDepth: 5
+  - _position: {x: 6, y: -5, z: -3}
+    _cellType: 0
+    _tile: {fileID: 11400000, guid: 88c65eca82c0f46399dd5ffaf0613790, type: 2}
+    _boxSize: {x: 1, y: 1, z: 1}
+    _holeDepth: 5
+  - _position: {x: 7, y: -5, z: -3}
+    _cellType: 0
+    _tile: {fileID: 11400000, guid: 88c65eca82c0f46399dd5ffaf0613790, type: 2}
+    _boxSize: {x: 1, y: 1, z: 1}
+    _holeDepth: 5
+  - _position: {x: 8, y: -5, z: -3}
+    _cellType: 0
+    _tile: {fileID: 11400000, guid: 88c65eca82c0f46399dd5ffaf0613790, type: 2}
+    _boxSize: {x: 1, y: 1, z: 1}
+    _holeDepth: 5
+  - _position: {x: 2, y: -5, z: -2}
+    _cellType: 0
+    _tile: {fileID: 11400000, guid: 88c65eca82c0f46399dd5ffaf0613790, type: 2}
+    _boxSize: {x: 1, y: 1, z: 1}
+    _holeDepth: 5
+  - _position: {x: 2, y: -5, z: -3}
+    _cellType: 0
+    _tile: {fileID: 11400000, guid: 88c65eca82c0f46399dd5ffaf0613790, type: 2}
+    _boxSize: {x: 1, y: 1, z: 1}
+    _holeDepth: 5
+  - _position: {x: 3, y: -5, z: -3}
+    _cellType: 0
+    _tile: {fileID: 11400000, guid: 88c65eca82c0f46399dd5ffaf0613790, type: 2}
+    _boxSize: {x: 1, y: 1, z: 1}
+    _holeDepth: 5
+  - _position: {x: 2, y: -5, z: 0}
+    _cellType: 0
+    _tile: {fileID: 11400000, guid: 88c65eca82c0f46399dd5ffaf0613790, type: 2}
+    _boxSize: {x: 1, y: 1, z: 1}
+    _holeDepth: 5

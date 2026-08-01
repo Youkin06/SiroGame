@@ -4801,8 +4801,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::WorldModeVisualTransition
   _transitionDuration: 0.6
   _edgeSoftness: 0.04
-  _shiroBackground: {r: 0, g: 0, b: 0, a: 1}
-  _kuroBackground: {r: 1, g: 1, b: 1, a: 1}
+  _shiroBackground: {r: 0.7169812, g: 0.7169812, b: 0.7169812, a: 1}
+  _kuroBackground: {r: 0.13207549, g: 0.13207549, b: 0.13207549, a: 1}
 --- !u!1001 &1017009573
 PrefabInstance:
   m_ObjectHideFlags: 0
