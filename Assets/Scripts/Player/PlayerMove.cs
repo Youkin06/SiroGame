@@ -1,7 +1,9 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.SceneManagement;
 
 public class PlayerMove : MonoBehaviour
 {
@@ -14,6 +16,7 @@ public class PlayerMove : MonoBehaviour
     [SerializeField] private float _moveForce = 5;
     [SerializeField] private float _jumpForce = 5;
     [SerializeField] private float _rotationSpeed = 12;
+    [SerializeField, Min(0f)] private float _restartDelayAfterDeath = 0.5f;
     
     private Rigidbody _rigidbody;
     private Animator _animator;
@@ -24,6 +27,7 @@ public class PlayerMove : MonoBehaviour
     private readonly HashSet<Collider> _groundContacts = new();
     private bool _isGrounded;
     private bool _jumpConsumed;
+    private Coroutine _restartCoroutine;
 
     public bool IsDead { get; private set; }
     public event Action<PlayerMove> Died;
@@ -218,6 +222,31 @@ public class PlayerMove : MonoBehaviour
         }
 
         Died?.Invoke(this);
+        _restartCoroutine = StartCoroutine(RestartCurrentSceneAfterDeath());
+    }
+
+    private IEnumerator RestartCurrentSceneAfterDeath()
+    {
+        if (_restartDelayAfterDeath > 0f)
+        {
+            yield return new WaitForSecondsRealtime(_restartDelayAfterDeath);
+        }
+
+        TileLoadingScreen loadingScreen = TileLoadingScreen.Instance;
+        if (loadingScreen == null)
+        {
+            Debug.LogError(
+                "死亡後の再開にはTileLoadingScreenが必要です。" +
+                "最初に開くシーンへ1つ配置してください。",
+                this
+            );
+            _restartCoroutine = null;
+            yield break;
+        }
+
+        Scene activeScene = SceneManager.GetActiveScene();
+        loadingScreen.LoadScene(activeScene.buildIndex);
+        _restartCoroutine = null;
     }
 
     private void TryDieFromEnemy(Collider other)

@@ -4,7 +4,9 @@
 #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/DeclareDepthTexture.hlsl"
 #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/DeclareNormalsTexture.hlsl"
 
+#if !defined(SIROGAME_BLIT_TEXTURE_DECLARED)
 TEXTURE2D_X(_BlitTexture);
+#endif
 
 float _WorldModeVisualEnabled;
 float4 _WorldModeTransitionOrigin;
@@ -51,6 +53,7 @@ bool DotOutlineIsBackground(float rawDepth)
 
 void DotOutline_float(float4 UV, out float3 Out)
 {
+    Out = float3(0.0, 0.0, 0.0);
 #if defined(SHADERGRAPH_PREVIEW)
     float checker = fmod(floor(UV.x * 16.0) + floor(UV.y * 16.0), 2.0);
     Out = lerp(float3(0.25, 0.25, 0.25), float3(0.75, 0.75, 0.75), checker);

@@ -47,7 +47,7 @@ AnimationClip:
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
-    path: bodies/hand_R
+    path: hand_R
   - curve:
       serializedVersion: 2
       m_Curve:
@@ -81,7 +81,7 @@ AnimationClip:
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
-    path: bodies/hand_L
+    path: hand_L
   - curve:
       serializedVersion: 2
       m_Curve:
@@ -115,7 +115,7 @@ AnimationClip:
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
-    path: bodies/lef_R
+    path: lef_R
   - curve:
       serializedVersion: 2
       m_Curve:
@@ -149,7 +149,7 @@ AnimationClip:
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
-    path: bodies/lef_L
+    path: lef_L
   m_PositionCurves: []
   m_ScaleCurves: []
   m_FloatCurves: []
@@ -162,7 +162,7 @@ AnimationClip:
   m_ClipBindingConstant:
     genericBindings:
     - serializedVersion: 2
-      path: 2544388678
+      path: 3713458406
       attribute: 4
       script: {fileID: 0}
       typeID: 4
@@ -171,7 +171,7 @@ AnimationClip:
       isIntCurve: 0
       isSerializeReferenceCurve: 0
     - serializedVersion: 2
-      path: 1839691557
+      path: 660200837
       attribute: 4
       script: {fileID: 0}
       typeID: 4
@@ -180,7 +180,7 @@ AnimationClip:
       isIntCurve: 0
       isSerializeReferenceCurve: 0
     - serializedVersion: 2
-      path: 1124814293
+      path: 1644473521
       attribute: 4
       script: {fileID: 0}
       typeID: 4
@@ -189,7 +189,7 @@ AnimationClip:
       isIntCurve: 0
       isSerializeReferenceCurve: 0
     - serializedVersion: 2
-      path: 3104075958
+      path: 2550895058
       attribute: 4
       script: {fileID: 0}
       typeID: 4
@@ -254,7 +254,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: localEulerAnglesRaw.x
-    path: bodies/hand_R
+    path: hand_R
     classID: 4
     script: {fileID: 0}
     flags: 16
@@ -293,7 +293,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: localEulerAnglesRaw.y
-    path: bodies/hand_R
+    path: hand_R
     classID: 4
     script: {fileID: 0}
     flags: 16
@@ -332,7 +332,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: localEulerAnglesRaw.z
-    path: bodies/hand_R
+    path: hand_R
     classID: 4
     script: {fileID: 0}
     flags: 16
@@ -371,7 +371,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: localEulerAnglesRaw.x
-    path: bodies/hand_L
+    path: hand_L
     classID: 4
     script: {fileID: 0}
     flags: 16
@@ -410,7 +410,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: localEulerAnglesRaw.y
-    path: bodies/hand_L
+    path: hand_L
     classID: 4
     script: {fileID: 0}
     flags: 16
@@ -449,7 +449,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: localEulerAnglesRaw.z
-    path: bodies/hand_L
+    path: hand_L
     classID: 4
     script: {fileID: 0}
     flags: 16
@@ -488,7 +488,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: localEulerAnglesRaw.x
-    path: bodies/lef_R
+    path: lef_R
     classID: 4
     script: {fileID: 0}
     flags: 16
@@ -527,7 +527,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: localEulerAnglesRaw.y
-    path: bodies/lef_R
+    path: lef_R
     classID: 4
     script: {fileID: 0}
     flags: 16
@@ -566,7 +566,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: localEulerAnglesRaw.z
-    path: bodies/lef_R
+    path: lef_R
     classID: 4
     script: {fileID: 0}
     flags: 16
@@ -605,7 +605,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: localEulerAnglesRaw.x
-    path: bodies/lef_L
+    path: lef_L
     classID: 4
     script: {fileID: 0}
     flags: 16
@@ -644,7 +644,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: localEulerAnglesRaw.y
-    path: bodies/lef_L
+    path: lef_L
     classID: 4
     script: {fileID: 0}
     flags: 16
@@ -683,7 +683,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: localEulerAnglesRaw.z
-    path: bodies/lef_L
+    path: lef_L
     classID: 4
     script: {fileID: 0}
     flags: 16
@@ -696,7 +696,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_LocalEulerAngles.x
-    path: bodies/hand_R
+    path: hand_R
     classID: 4
     script: {fileID: 0}
     flags: 0
@@ -708,7 +708,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_LocalEulerAngles.y
-    path: bodies/hand_R
+    path: hand_R
     classID: 4
     script: {fileID: 0}
     flags: 0
@@ -720,7 +720,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_LocalEulerAngles.z
-    path: bodies/hand_R
+    path: hand_R
     classID: 4
     script: {fileID: 0}
     flags: 0
@@ -732,7 +732,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_LocalEulerAngles.x
-    path: bodies/hand_L
+    path: hand_L
     classID: 4
     script: {fileID: 0}
     flags: 0
@@ -744,7 +744,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_LocalEulerAngles.y
-    path: bodies/hand_L
+    path: hand_L
     classID: 4
     script: {fileID: 0}
     flags: 0
@@ -756,7 +756,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_LocalEulerAngles.z
-    path: bodies/hand_L
+    path: hand_L
     classID: 4
     script: {fileID: 0}
     flags: 0
@@ -768,7 +768,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_LocalEulerAngles.x
-    path: bodies/lef_R
+    path: lef_R
     classID: 4
     script: {fileID: 0}
     flags: 0
@@ -780,7 +780,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_LocalEulerAngles.y
-    path: bodies/lef_R
+    path: lef_R
     classID: 4
     script: {fileID: 0}
     flags: 0
@@ -792,7 +792,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_LocalEulerAngles.z
-    path: bodies/lef_R
+    path: lef_R
     classID: 4
     script: {fileID: 0}
     flags: 0
@@ -804,7 +804,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_LocalEulerAngles.x
-    path: bodies/lef_L
+    path: lef_L
     classID: 4
     script: {fileID: 0}
     flags: 0
@@ -816,7 +816,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_LocalEulerAngles.y
-    path: bodies/lef_L
+    path: lef_L
     classID: 4
     script: {fileID: 0}
     flags: 0
@@ -828,7 +828,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_LocalEulerAngles.z
-    path: bodies/lef_L
+    path: lef_L
     classID: 4
     script: {fileID: 0}
     flags: 0
