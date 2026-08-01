@@ -7,6 +7,9 @@ public class PlayerMove : MonoBehaviour
 {
     private static readonly int WalkAnimationHash = Animator.StringToHash("walk");
     private static readonly int JumpAnimationHash = Animator.StringToHash("jump");
+    private static readonly int DeadAnimationHash = Animator.StringToHash("dead");
+    private static readonly int DeathStateHash =
+        Animator.StringToHash("Base Layer.death_player");
 
     [SerializeField] private float _moveForce = 5;
     [SerializeField] private float _jumpForce = 5;
@@ -21,6 +24,9 @@ public class PlayerMove : MonoBehaviour
     private readonly HashSet<Collider> _groundContacts = new();
     private bool _isGrounded;
     private bool _jumpConsumed;
+
+    public bool IsDead { get; private set; }
+    public event Action<PlayerMove> Died;
 
     private void Awake(){
         _rigidbody = GetComponent<Rigidbody>();
@@ -53,7 +59,10 @@ public class PlayerMove : MonoBehaviour
 
     private void OnEnable()
     {
-        _gameInputActions.Player.Enable();
+        if (!IsDead)
+        {
+            _gameInputActions.Player.Enable();
+        }
     }
 
     private void OnDisable()
@@ -74,12 +83,17 @@ public class PlayerMove : MonoBehaviour
     }
 
     private void OnMove(InputAction.CallbackContext context){
+        if (IsDead)
+        {
+            return;
+        }
+
         //Moveアクションの入力取得
         _moveInputValue = context.ReadValue<Vector2>();
     }
 
     private void OnJump(InputAction.CallbackContext context){
-        if (!_isGrounded || _jumpConsumed)
+        if (IsDead || !_isGrounded || _jumpConsumed)
         {
             return;
         }
@@ -105,11 +119,18 @@ public class PlayerMove : MonoBehaviour
     private void OnCollisionEnter(Collision collision)
     {
         UpdateGroundContact(collision);
+        TryDieFromEnemy(collision.collider);
     }
 
     private void OnCollisionStay(Collision collision)
     {
         UpdateGroundContact(collision);
+        TryDieFromEnemy(collision.collider);
+    }
+
+    private void OnTriggerEnter(Collider other)
+    {
+        TryDieFromEnemy(other);
     }
 
     private void OnCollisionExit(Collision collision)
@@ -151,6 +172,11 @@ public class PlayerMove : MonoBehaviour
 
     private void OnSwitchMode(InputAction.CallbackContext context)
     {
+        if (IsDead)
+        {
+            return;
+        }
+
         if (_worldModeManager == null)
         {
             Debug.LogError("シーン内に WorldModeManager が見つかりません。", this);
@@ -158,6 +184,55 @@ public class PlayerMove : MonoBehaviour
         }
 
         _worldModeManager.ToggleMode();
+    }
+
+    /// <summary>
+    /// クロ状態で見張りに接触した時に呼ばれる。死亡後は入力と物理移動を停止する。
+    /// </summary>
+    public void Die()
+    {
+        if (IsDead)
+        {
+            return;
+        }
+
+        IsDead = true;
+        _moveInputValue = Vector2.zero;
+        _jumpConsumed = true;
+
+        if (_rigidbody != null)
+        {
+            _rigidbody.linearVelocity = Vector3.zero;
+            _rigidbody.angularVelocity = Vector3.zero;
+            _rigidbody.isKinematic = true;
+        }
+
+        _gameInputActions?.Player.Disable();
+
+        if (_animator != null)
+        {
+            _animator.SetBool(WalkAnimationHash, false);
+            _animator.SetBool(JumpAnimationHash, false);
+            _animator.SetBool(DeadAnimationHash, true);
+            _animator.Play(DeathStateHash, 0, 0f);
+        }
+
+        Died?.Invoke(this);
+    }
+
+    private void TryDieFromEnemy(Collider other)
+    {
+        if (IsDead || _worldModeManager == null ||
+            _worldModeManager.CurrentMode != WorldMode.Kuro || other == null)
+        {
+            return;
+        }
+
+        EnemyController enemy = other.GetComponentInParent<EnemyController>();
+        if (enemy != null && enemy.CurrentState != EnemyState.Dead)
+        {
+            Die();
+        }
     }
 
     private void ApplyFrictionlessMaterial()
@@ -182,6 +257,11 @@ public class PlayerMove : MonoBehaviour
     
     void FixedUpdate()
     {
+        if (IsDead)
+        {
+            return;
+        }
+
         // 接触による回転速度が残らないようにする。
         _rigidbody.angularVelocity = Vector3.zero;
 
@@ -220,10 +300,19 @@ public class PlayerMove : MonoBehaviour
             return;
         }
 
+        if (IsDead)
+        {
+            _animator.SetBool(WalkAnimationHash, false);
+            _animator.SetBool(JumpAnimationHash, false);
+            _animator.SetBool(DeadAnimationHash, true);
+            return;
+        }
+
         bool isJumping = !_isGrounded;
         bool isWalking = !isJumping && moveDirection.sqrMagnitude > 0.001f;
 
         _animator.SetBool(WalkAnimationHash, isWalking);
         _animator.SetBool(JumpAnimationHash, isJumping);
+        _animator.SetBool(DeadAnimationHash, false);
     }
 }

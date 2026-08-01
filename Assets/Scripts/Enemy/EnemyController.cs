@@ -39,6 +39,7 @@ public class EnemyController : MonoBehaviour
     public EnemyState CurrentState { get; private set; } = EnemyState.Idle;
 
     private WorldModeManager _worldModeManager;
+    private PlayerMove _playerMove;
     private Transform _player;
     private NavMeshAgent _navMeshAgent;
     private Rigidbody _rigidbody;
@@ -59,8 +60,8 @@ public class EnemyController : MonoBehaviour
     {
         _worldModeManager = FindFirstObjectByType<WorldModeManager>();
 
-        PlayerMove playerMove = FindFirstObjectByType<PlayerMove>();
-        _player = playerMove != null ? playerMove.transform : null;
+        _playerMove = FindFirstObjectByType<PlayerMove>();
+        _player = _playerMove != null ? _playerMove.transform : null;
 
         // Agentは敵本体のPivotではなく、足元に置いた子オブジェクトから取得する。
         // これにより、Rigidbody本体の高さを変えずにNavMeshへ正しく接地できる。
@@ -107,6 +108,7 @@ public class EnemyController : MonoBehaviour
         _previousNavigationPosition = _rigidbody.position;
 
         _worldModeManager.ModeChanged += OnModeChanged;
+        _playerMove.Died += OnPlayerDied;
         OnModeChanged(_worldModeManager.CurrentMode);
     }
 
@@ -115,6 +117,11 @@ public class EnemyController : MonoBehaviour
         if (_worldModeManager != null)
         {
             _worldModeManager.ModeChanged -= OnModeChanged;
+        }
+
+        if (_playerMove != null)
+        {
+            _playerMove.Died -= OnPlayerDied;
         }
     }
 
@@ -130,6 +137,11 @@ public class EnemyController : MonoBehaviour
             _navigationVelocity = Vector3.zero;
             UpdateAnimationState();
             return;
+        }
+
+        if (CurrentState == EnemyState.Idle)
+        {
+            _navMeshAgent.isStopped = true;
         }
 
         SyncAgentToRigidbody();
@@ -453,6 +465,12 @@ public class EnemyController : MonoBehaviour
             return;
         }
 
+        if (_playerMove != null && _playerMove.IsDead)
+        {
+            StopChasing();
+            return;
+        }
+
         CurrentState = mode == WorldMode.Kuro
             ? EnemyState.Chase
             : EnemyState.Idle;
@@ -470,9 +488,37 @@ public class EnemyController : MonoBehaviour
         }
     }
 
+    private void OnPlayerDied(PlayerMove player)
+    {
+        StopChasing();
+    }
+
+    private void StopChasing()
+    {
+        if (CurrentState != EnemyState.Idle && CurrentState != EnemyState.Chase)
+        {
+            return;
+        }
+
+        CurrentState = EnemyState.Idle;
+        _navigationVelocity = Vector3.zero;
+        _lastDestination = new Vector3(float.PositiveInfinity, 0f, 0f);
+
+        if (_navMeshAgent != null && _navMeshAgent.enabled)
+        {
+            _navMeshAgent.isStopped = true;
+            if (_navMeshAgent.isOnNavMesh)
+            {
+                _navMeshAgent.ResetPath();
+            }
+        }
+
+        UpdateAnimationState();
+    }
+
     private bool HasRequiredReferences()
     {
-        if (_worldModeManager != null && _player != null &&
+        if (_worldModeManager != null && _playerMove != null && _player != null &&
             _navMeshAgent != null && _rigidbody != null &&
             _animator != null &&
             _bodyColliders != null &&
