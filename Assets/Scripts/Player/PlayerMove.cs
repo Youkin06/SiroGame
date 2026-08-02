@@ -7,6 +7,8 @@ using UnityEngine.SceneManagement;
 
 public class PlayerMove : MonoBehaviour
 {
+    private const float GroundNormalThreshold = 0.5f;
+    private const float LandingRelativeVelocityThreshold = 0.1f;
     private static readonly int WalkAnimationHash = Animator.StringToHash("walk");
     private static readonly int JumpAnimationHash = Animator.StringToHash("jump");
     private static readonly int DeadAnimationHash = Animator.StringToHash("dead");
@@ -145,12 +147,14 @@ public class PlayerMove : MonoBehaviour
 
     private void UpdateGroundContact(Collision collision)
     {
+        ContactPoint groundContact = default;
         bool hasGroundContact = false;
 
         foreach (ContactPoint contact in collision.contacts)
         {
-            if (Vector3.Dot(contact.normal, Vector3.up) > 0.5f)
+            if (Vector3.Dot(contact.normal, Vector3.up) > GroundNormalThreshold)
             {
+                groundContact = contact;
                 hasGroundContact = true;
                 break;
             }
@@ -158,11 +162,14 @@ public class PlayerMove : MonoBehaviour
 
         if (hasGroundContact)
         {
-            bool wasGrounded = _isGrounded;
             _groundContacts.Add(collision.collider);
             _isGrounded = true;
 
-            if (!wasGrounded && _rigidbody.linearVelocity.y <= 0.1f)
+            // Dynamicな箱やKinematicな敵では、着地した最初の接触フレームに
+            // 上向き速度が残る場合がある。上面に接触している間は毎回再判定し、
+            // 相手の移動速度を差し引いた相対速度が落下・静止ならジャンプを回復する。
+            if (GetRelativeVerticalVelocity(collision, groundContact) <=
+                LandingRelativeVelocityThreshold)
             {
                 _jumpConsumed = false;
             }
@@ -172,6 +179,22 @@ public class PlayerMove : MonoBehaviour
             _groundContacts.Remove(collision.collider);
             _isGrounded = _groundContacts.Count > 0;
         }
+    }
+
+    private float GetRelativeVerticalVelocity(
+        Collision collision,
+        ContactPoint groundContact
+    )
+    {
+        Vector3 playerVelocity = _rigidbody.GetPointVelocity(groundContact.point);
+        Rigidbody supportBody = collision.collider != null
+            ? collision.collider.attachedRigidbody
+            : null;
+        Vector3 supportVelocity = supportBody != null
+            ? supportBody.GetPointVelocity(groundContact.point)
+            : Vector3.zero;
+
+        return Vector3.Dot(playerVelocity - supportVelocity, Vector3.up);
     }
 
     private void OnSwitchMode(InputAction.CallbackContext context)
