@@ -1,7 +1,8 @@
 using UnityEngine;
 
 /// <summary>
-/// PlayerまたはEnemyが押し板の上にいる間だけ、ボタンを沈めてDoorを開く。
+/// Player、Enemy、または物理的に動く箱が押し板の上にいる間だけ、
+/// ボタンを沈めてDoorを開く。
 /// 参照は既存のシーン階層からAwakeで取得し、コンポーネントは自動生成しない。
 /// </summary>
 public sealed class DoorButton : MonoBehaviour
@@ -190,7 +191,17 @@ public sealed class DoorButton : MonoBehaviour
         }
 
         EnemyController enemy = candidate.GetComponentInParent<EnemyController>();
-        return enemy != null ? enemy.transform : null;
+        if (enemy != null)
+        {
+            return enemy.transform;
+        }
+
+        // WoodenBoxのようなDynamic Rigidbodyを持つ物理オブジェクトも押下対象にする。
+        // 名前やTagには依存しないため、同じ構成の箱を増やしても追加設定は不要。
+        Rigidbody rigidbody = candidate.attachedRigidbody;
+        return rigidbody != null && !rigidbody.isKinematic
+            ? rigidbody.transform
+            : null;
     }
 
     private bool IsCenterAbovePlate(Transform presser)
