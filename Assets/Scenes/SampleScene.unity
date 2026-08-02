@@ -2638,6 +2638,7 @@ GameObject:
   - component: {fileID: 625321199}
   - component: {fileID: 625321198}
   - component: {fileID: 625321197}
+  - component: {fileID: 625321200}
   m_Layer: 0
   m_Name: GameClearZone
   m_TagString: Untagged
@@ -2738,6 +2739,18 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 625321195}
   m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!114 &625321200
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 625321195}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4ee53c01f2bc4316b5d9950126f6675e, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Assembly-CSharp::StageClearZone
 --- !u!4 &627029041 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 5945280206704736656, guid: 79b62d3e73c8548d2b8b984b7abcaae0, type: 3}

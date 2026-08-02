@@ -132,7 +132,7 @@ public sealed class TitleMenuController : MonoBehaviour
 
             if (!TileLoadingScreen.Instance.IsLoading)
             {
-                TileLoadingScreen.Instance.LoadScene("SampleScene");
+                TileLoadingScreen.Instance.LoadNewGameScene("SampleScene");
             }
 
             return;

@@ -13,6 +13,8 @@ using UnityEngine.UI;
 [DefaultExecutionOrder(-1000)]
 public sealed class TileLoadingScreen : MonoBehaviour
 {
+    private const string CanvasPrefabResourcePath = "UI/TileLoadingCanvas";
+
     public static TileLoadingScreen Instance { get; private set; }
 
     [Header("Grid")]
@@ -24,13 +26,14 @@ public sealed class TileLoadingScreen : MonoBehaviour
     [SerializeField, Min(0.01f)] private float _flipDuration = 0.2f;
     [SerializeField, Min(0f)] private float _waveDelay = 0.045f;
     [SerializeField, Min(0f)] private float _minimumVisibleTime = 0.6f;
-    [SerializeField] private Color _frontColor = Color.black;
-    [SerializeField] private Color _backColor = Color.white;
+    [SerializeField] private Color _frontColor = Color.white;
+    [SerializeField] private Color _backColor = Color.black;
 
     private readonly List<LoadingTile> _tiles = new();
     private Canvas _canvas;
     private CanvasGroup _canvasGroup;
     private RectTransform _tileRoot;
+    private StageClearGaugeView _stageClearGauge;
     private Coroutine _loadCoroutine;
     private bool _isWhite;
 
@@ -46,7 +49,12 @@ public sealed class TileLoadingScreen : MonoBehaviour
 
         Instance = this;
         DontDestroyOnLoad(gameObject);
-        CreateUi();
+        if (!CreateUi())
+        {
+            enabled = false;
+            return;
+        }
+
         SetVisible(false);
     }
 
@@ -72,7 +80,27 @@ public sealed class TileLoadingScreen : MonoBehaviour
             return;
         }
 
-        _loadCoroutine = StartCoroutine(LoadSceneRoutine(sceneName));
+        _loadCoroutine = StartCoroutine(LoadSceneRoutine(sceneName, false, 0f));
+    }
+
+    /// <summary>
+    /// タイトルから新しくゲームを開始する。ステージ間のクロ累計をリセットする。
+    /// </summary>
+    public void LoadNewGameScene(string sceneName)
+    {
+        if (string.IsNullOrWhiteSpace(sceneName))
+        {
+            Debug.LogError("読み込むシーン名が空です。", this);
+            return;
+        }
+
+        if (_loadCoroutine != null)
+        {
+            return;
+        }
+
+        KuroTimeProgress.Reset();
+        _loadCoroutine = StartCoroutine(LoadSceneRoutine(sceneName, false, 0f));
     }
 
     /// <summary>Build Settingsに登録済みのシーン番号を指定して遷移する。</summary>
@@ -83,10 +111,30 @@ public sealed class TileLoadingScreen : MonoBehaviour
             return;
         }
 
-        _loadCoroutine = StartCoroutine(LoadSceneRoutine(buildIndex));
+        _loadCoroutine = StartCoroutine(LoadSceneRoutine(buildIndex, false, 0f));
     }
 
-    private IEnumerator LoadSceneRoutine(string sceneName)
+    /// <summary>
+    /// ステージクリア用。前回の累計位置から今回の累計位置までゲージを伸ばし、
+    /// Build Settings上の次ステージへ遷移する。
+    /// </summary>
+    public void LoadStageClearScene(int buildIndex, float totalKuroElapsedTime)
+    {
+        if (_loadCoroutine != null)
+        {
+            return;
+        }
+
+        _loadCoroutine = StartCoroutine(
+            LoadSceneRoutine(buildIndex, true, totalKuroElapsedTime)
+        );
+    }
+
+    private IEnumerator LoadSceneRoutine(
+        string sceneName,
+        bool showStageClearGauge,
+        float totalKuroElapsedTime
+    )
     {
         AsyncOperation operation = SceneManager.LoadSceneAsync(sceneName);
         if (operation == null)
@@ -96,10 +144,18 @@ public sealed class TileLoadingScreen : MonoBehaviour
             yield break;
         }
 
-        yield return RunTransition(operation);
+        yield return RunTransition(
+            operation,
+            showStageClearGauge,
+            totalKuroElapsedTime
+        );
     }
 
-    private IEnumerator LoadSceneRoutine(int buildIndex)
+    private IEnumerator LoadSceneRoutine(
+        int buildIndex,
+        bool showStageClearGauge,
+        float totalKuroElapsedTime
+    )
     {
         AsyncOperation operation = SceneManager.LoadSceneAsync(buildIndex);
         if (operation == null)
@@ -109,10 +165,18 @@ public sealed class TileLoadingScreen : MonoBehaviour
             yield break;
         }
 
-        yield return RunTransition(operation);
+        yield return RunTransition(
+            operation,
+            showStageClearGauge,
+            totalKuroElapsedTime
+        );
     }
 
-    private IEnumerator RunTransition(AsyncOperation operation)
+    private IEnumerator RunTransition(
+        AsyncOperation operation,
+        bool showStageClearGauge,
+        float totalKuroElapsedTime
+    )
     {
         SetVisible(true);
         SetTilesHidden();
@@ -121,10 +185,29 @@ public sealed class TileLoadingScreen : MonoBehaviour
         float startedAt = Time.unscaledTime;
         yield return FlipAllTiles(true);
 
+        float previousKuroTime = KuroTimeProgress.CompletedStageTime;
+        float nextKuroTime = Mathf.Max(
+            previousKuroTime,
+            Mathf.Max(0f, totalKuroElapsedTime)
+        );
+
+        if (showStageClearGauge)
+        {
+            yield return _stageClearGauge.Play(
+                previousKuroTime,
+                nextKuroTime
+            );
+        }
+
         while (operation.progress < 0.9f ||
                Time.unscaledTime - startedAt < _minimumVisibleTime)
         {
             yield return null;
+        }
+
+        if (showStageClearGauge)
+        {
+            KuroTimeProgress.CommitStageTotal(nextKuroTime);
         }
 
         operation.allowSceneActivation = true;
@@ -228,45 +311,51 @@ public sealed class TileLoadingScreen : MonoBehaviour
         tile.Image.color = makeWhite ? toColor : Transparent(_frontColor);
     }
 
-    private void CreateUi()
+    private bool CreateUi()
     {
         _canvas = GetComponentInChildren<Canvas>(true);
-        if (_canvas != null)
+        if (_canvas == null)
         {
-            _canvasGroup = _canvas.GetComponent<CanvasGroup>();
-            _tileRoot = _canvas.transform.Find("Tiles") as RectTransform;
-            if (_canvasGroup != null && _tileRoot != null)
+            GameObject canvasPrefab = Resources.Load<GameObject>(
+                CanvasPrefabResourcePath
+            );
+            if (canvasPrefab == null)
             {
-                BuildTiles();
-                return;
+                Debug.LogError(
+                    $"Resources/{CanvasPrefabResourcePath}.prefabが見つかりません。",
+                    this
+                );
+                return false;
             }
+
+            GameObject canvasObject = Instantiate(canvasPrefab, transform, false);
+            _canvas = canvasObject.GetComponent<Canvas>();
         }
 
-        GameObject canvasObject = new("TileLoadingCanvas", typeof(Canvas), typeof(CanvasScaler),
-            typeof(GraphicRaycaster), typeof(CanvasGroup));
-        canvasObject.transform.SetParent(transform, false);
+        if (_canvas == null)
+        {
+            Debug.LogError(
+                "TileLoadingCanvas PrefabにCanvasがありません。",
+                this
+            );
+            return false;
+        }
 
-        _canvas = canvasObject.GetComponent<Canvas>();
-        _canvas.renderMode = RenderMode.ScreenSpaceOverlay;
-        _canvas.sortingOrder = short.MaxValue;
-
-        CanvasScaler scaler = canvasObject.GetComponent<CanvasScaler>();
-        scaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
-        scaler.referenceResolution = new Vector2(1920f, 1080f);
-        scaler.screenMatchMode = CanvasScaler.ScreenMatchMode.MatchWidthOrHeight;
-        scaler.matchWidthOrHeight = 0.5f;
-
-        _canvasGroup = canvasObject.GetComponent<CanvasGroup>();
-
-        GameObject tileRootObject = new("Tiles", typeof(RectTransform));
-        tileRootObject.transform.SetParent(canvasObject.transform, false);
-        _tileRoot = tileRootObject.GetComponent<RectTransform>();
-        _tileRoot.anchorMin = Vector2.zero;
-        _tileRoot.anchorMax = Vector2.one;
-        _tileRoot.offsetMin = Vector2.zero;
-        _tileRoot.offsetMax = Vector2.zero;
+        _canvasGroup = _canvas.GetComponent<CanvasGroup>();
+        _tileRoot = _canvas.transform.Find("Tiles") as RectTransform;
+        _stageClearGauge = _canvas.GetComponentInChildren<StageClearGaugeView>(true);
+        if (_canvasGroup == null || _tileRoot == null || _stageClearGauge == null)
+        {
+            Debug.LogError(
+                "TileLoadingCanvasにはCanvasGroup、Tiles、StageClearGaugeが必要です。",
+                this
+            );
+            return false;
+        }
 
         BuildTiles();
+        _stageClearGauge.HideImmediate();
+        return true;
     }
 
     private void BuildTiles()
@@ -332,6 +421,7 @@ public sealed class TileLoadingScreen : MonoBehaviour
     private void SetTilesHidden()
     {
         _isWhite = false;
+        _stageClearGauge.HideImmediate();
 
         foreach (LoadingTile tile in _tiles)
         {

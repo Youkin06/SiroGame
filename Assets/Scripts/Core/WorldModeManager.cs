@@ -16,12 +16,14 @@ public class WorldModeManager : MonoBehaviour
     /// ゲーム開始後、クロ状態だった時間の累計秒数。
     /// シロ状態では停止し、再びクロになると前回の値から加算を再開する。
     /// </summary>
-    public float KuroElapsedTime { get; private set; }
+    public float KuroElapsedTime =>
+        KuroTimeProgress.CompletedStageTime + _currentStageKuroElapsedTime;
 
     /// <summary>変更後のワールドモードを通知する。</summary>
     public event Action<WorldMode> ModeChanged;
 
     [SerializeField] private WorldMode _initialMode = WorldMode.Shiro;
+    private float _currentStageKuroElapsedTime;
 
     private void Awake()
     {
@@ -33,14 +35,14 @@ public class WorldModeManager : MonoBehaviour
 
         Instance = this;
         CurrentMode = _initialMode;
-        KuroElapsedTime = 0f;
+        _currentStageKuroElapsedTime = 0f;
     }
 
     private void Update()
     {
         if (CurrentMode == WorldMode.Kuro)
         {
-            KuroElapsedTime += Time.deltaTime;
+            _currentStageKuroElapsedTime += Time.deltaTime;
         }
     }
 
