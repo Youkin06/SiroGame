@@ -30,14 +30,38 @@ public sealed class WorldModeVisualTransition : MonoBehaviour
     [SerializeField, Min(0.01f)] private float _transitionDuration = 0.6f;
     [SerializeField, Range(0.001f, 0.2f)] private float _edgeSoftness = 0.04f;
     [Header("Background Colors")]
-    [InspectorName("シロ背景色（暗い灰色）")]
-    [SerializeField] private Color _shiroBackground = new(0.12f, 0.12f, 0.12f, 1f);
-    [InspectorName("クロ背景色（明るい灰色）")]
-    [SerializeField] private Color _kuroBackground = new(0.88f, 0.88f, 0.88f, 1f);
+    [InspectorName("クロ時のPlayer・背景色")]
+    [SerializeField] private Color _kuroBackground = Color.black;
+
+    [Header("Shiro Player Color Levels")]
+    [Tooltip("クロ累計時間がLevel 1未満の時はLevel 1 Colorを使用します。")]
+    [InspectorName("Level 1 終了時間（秒）")]
+    [SerializeField, Min(0f)] private float _level1Time = 10f;
+    [Tooltip("クロ累計時間がLevel 2未満の時はLevel 2 Colorを使用します。")]
+    [InspectorName("Level 2 終了時間（秒）")]
+    [SerializeField, Min(0f)] private float _level2Time = 20f;
+    [Tooltip("クロ累計時間がLevel 3未満の時はLevel 3 Colorを使用します。")]
+    [InspectorName("Level 3 終了時間（秒）")]
+    [SerializeField, Min(0f)] private float _level3Time = 40f;
+    [Tooltip("クロ累計時間がLevel 4未満の時はLevel 4 Colorを使用します。以降はLevel 5です。")]
+    [InspectorName("Level 4 終了時間（秒）")]
+    [SerializeField, Min(0f)] private float _level4Time = 60f;
+    [InspectorName("Level 1 Color（真っ白）")]
+    [SerializeField] private Color _level1Color = Color.white;
+    [InspectorName("Level 2 Color（薄い灰色）")]
+    [SerializeField] private Color _level2Color = new(0.75f, 0.75f, 0.75f, 1f);
+    [InspectorName("Level 3 Color（灰色）")]
+    [SerializeField] private Color _level3Color = new(0.5f, 0.5f, 0.5f, 1f);
+    [InspectorName("Level 4 Color（濃い灰色）")]
+    [SerializeField] private Color _level4Color = new(0.25f, 0.25f, 0.25f, 1f);
+    [InspectorName("Level 5 Color（真っ黒）")]
+    [SerializeField] private Color _level5Color = Color.black;
 
     public bool IsTransitioning { get; private set; }
     public float TransitionProgress => _progress;
     public Vector2 TransitionOrigin => _origin;
+    public Color CurrentShiroPlayerColor { get; private set; } = Color.white;
+    public int CurrentShiroColorLevel { get; private set; } = 1;
 
     private readonly List<MaterialColorBinding> _playerMaterials = new();
     private MaterialPropertyBlock _propertyBlock;
@@ -85,6 +109,7 @@ public sealed class WorldModeVisualTransition : MonoBehaviour
         _progress = 1f;
         _targetProgress = 1f;
         IsTransitioning = false;
+        UpdateCurrentShiroAppearance();
 
         _worldModeManager.ModeChanged += OnModeChanged;
         ApplyVisualState();
@@ -127,12 +152,18 @@ public sealed class WorldModeVisualTransition : MonoBehaviour
         }
 
         Shader.SetGlobalFloat(VisualEnabledHash, 0f);
-        ApplyPlayerMode(0f);
+        RestorePlayerColors();
     }
 
     private void OnModeChanged(WorldMode nextMode)
     {
         float nextModeValue = ModeToFloat(nextMode);
+
+        if (nextMode == WorldMode.Shiro)
+        {
+            // クロ時間は累積値を使い、シロへ戻るたびに現在の段階を確定する。
+            UpdateCurrentShiroAppearance();
+        }
 
         if (IsTransitioning)
         {
@@ -173,11 +204,12 @@ public sealed class WorldModeVisualTransition : MonoBehaviour
         Shader.SetGlobalFloat(FromModeHash, _fromMode);
         Shader.SetGlobalFloat(ToModeHash, _toMode);
         Shader.SetGlobalFloat(FeatherHash, feather);
-        Shader.SetGlobalColor(ShiroBackgroundHash, _shiroBackground);
+        // 背景とPlayer本体は同じ色値を共有する。
+        Shader.SetGlobalColor(ShiroBackgroundHash, CurrentShiroPlayerColor);
         Shader.SetGlobalColor(KuroBackgroundHash, _kuroBackground);
 
         float playerMode = GetModeAtTransitionCenter(feather);
-        ApplyPlayerMode(playerMode);
+        ApplyPlayerMode(playerMode, CurrentShiroPlayerColor);
     }
 
     private float GetModeAtTransitionCenter(float feather)
@@ -223,9 +255,12 @@ public sealed class WorldModeVisualTransition : MonoBehaviour
                     continue;
                 }
 
+                bool isEye = playerRenderer.gameObject.name == "eye";
+
                 _playerMaterials.Add(new MaterialColorBinding(
                     playerRenderer,
                     materialIndex,
+                    isEye,
                     hasBaseColor,
                     hasBaseColor ? material.GetColor(BaseColorHash) : Color.white,
                     hasColor,
@@ -235,7 +270,7 @@ public sealed class WorldModeVisualTransition : MonoBehaviour
         }
     }
 
-    private void ApplyPlayerMode(float modeAmount)
+    private void ApplyPlayerMode(float modeAmount, Color shiroColor)
     {
         if (_propertyBlock == null)
         {
@@ -255,23 +290,94 @@ public sealed class WorldModeVisualTransition : MonoBehaviour
 
             if (binding.HasBaseColor)
             {
+                Color shiroBaseColor = GetShiroMaterialColor(
+                    binding.BaseColor,
+                    shiroColor,
+                    binding.IsEye
+                );
+                Color kuroBaseColor = GetKuroMaterialColor(
+                    binding.BaseColor,
+                    binding.IsEye
+                );
                 _propertyBlock.SetColor(
                     BaseColorHash,
-                    Color.Lerp(binding.BaseColor, Invert(binding.BaseColor), amount)
+                    Color.Lerp(shiroBaseColor, kuroBaseColor, amount)
                 );
             }
 
             if (binding.HasColor)
             {
+                Color shiroMaterialColor = GetShiroMaterialColor(
+                    binding.Color,
+                    shiroColor,
+                    binding.IsEye
+                );
+                Color kuroMaterialColor = GetKuroMaterialColor(
+                    binding.Color,
+                    binding.IsEye
+                );
                 _propertyBlock.SetColor(
                     ColorHash,
-                    Color.Lerp(binding.Color, Invert(binding.Color), amount)
+                    Color.Lerp(shiroMaterialColor, kuroMaterialColor, amount)
                 );
             }
 
             binding.Renderer.SetPropertyBlock(_propertyBlock, binding.MaterialIndex);
             _propertyBlock.Clear();
         }
+    }
+
+    /// <summary>
+    /// クロ状態だった累積時間に対応する、シロ状態のPlayer色を返す。
+    /// 境界値は次のLevelとして扱う（例: 10秒ちょうどはLevel 2）。
+    /// </summary>
+    public Color GetShiroPlayerColor(float kuroElapsedTime)
+    {
+        switch (GetShiroColorLevel(kuroElapsedTime))
+        {
+            case 1:
+                return _level1Color;
+            case 2:
+                return _level2Color;
+            case 3:
+                return _level3Color;
+            case 4:
+                return _level4Color;
+            default:
+                return _level5Color;
+        }
+    }
+
+    public int GetShiroColorLevel(float kuroElapsedTime)
+    {
+        float elapsedTime = Mathf.Max(0f, kuroElapsedTime);
+        if (elapsedTime < _level2Time)
+        {
+            return elapsedTime < _level1Time ? 1 : 2;
+        }
+
+        if (elapsedTime < _level3Time)
+        {
+            return 3;
+        }
+
+        return elapsedTime < _level4Time ? 4 : 5;
+    }
+
+    private void UpdateCurrentShiroAppearance()
+    {
+        float elapsedTime = _worldModeManager.KuroElapsedTime;
+        CurrentShiroColorLevel = GetShiroColorLevel(elapsedTime);
+        CurrentShiroPlayerColor = GetShiroPlayerColor(elapsedTime);
+    }
+
+    private void OnValidate()
+    {
+        // Inspectorで逆順の値を入力しても、各時間帯が破綻しないようにする。
+        _level1Time = Mathf.Max(0f, _level1Time);
+        _level2Time = Mathf.Max(_level1Time, _level2Time);
+        _level3Time = Mathf.Max(_level2Time, _level3Time);
+        _level4Time = Mathf.Max(_level3Time, _level4Time);
     }
 
     private bool HasRequiredReferences()
@@ -318,10 +424,66 @@ public sealed class WorldModeVisualTransition : MonoBehaviour
         );
     }
 
+    private Color GetShiroMaterialColor(Color original, Color bodyColor, bool isEye)
+    {
+        if (isEye)
+        {
+            return CurrentShiroColorLevel >= 4
+                ? WithOriginalAlpha(Color.white, original)
+                : original;
+        }
+
+        return WithOriginalAlpha(bodyColor, original);
+    }
+
+    private Color GetKuroMaterialColor(Color original, bool isEye)
+    {
+        return isEye
+            ? Invert(original)
+            : WithOriginalAlpha(_kuroBackground, original);
+    }
+
+    private void RestorePlayerColors()
+    {
+        if (_propertyBlock == null)
+        {
+            return;
+        }
+
+        foreach (MaterialColorBinding binding in _playerMaterials)
+        {
+            if (binding.Renderer == null)
+            {
+                continue;
+            }
+
+            binding.Renderer.GetPropertyBlock(_propertyBlock, binding.MaterialIndex);
+            if (binding.HasBaseColor)
+            {
+                _propertyBlock.SetColor(BaseColorHash, binding.BaseColor);
+            }
+
+            if (binding.HasColor)
+            {
+                _propertyBlock.SetColor(ColorHash, binding.Color);
+            }
+
+            binding.Renderer.SetPropertyBlock(_propertyBlock, binding.MaterialIndex);
+            _propertyBlock.Clear();
+        }
+    }
+
+    private static Color WithOriginalAlpha(Color color, Color original)
+    {
+        color.a = original.a;
+        return color;
+    }
+
     private sealed class MaterialColorBinding
     {
         public Renderer Renderer { get; }
         public int MaterialIndex { get; }
+        public bool IsEye { get; }
         public bool HasBaseColor { get; }
         public Color BaseColor { get; }
         public bool HasColor { get; }
@@ -330,6 +492,7 @@ public sealed class WorldModeVisualTransition : MonoBehaviour
         public MaterialColorBinding(
             Renderer renderer,
             int materialIndex,
+            bool isEye,
             bool hasBaseColor,
             Color baseColor,
             bool hasColor,
@@ -338,6 +501,7 @@ public sealed class WorldModeVisualTransition : MonoBehaviour
         {
             Renderer = renderer;
             MaterialIndex = materialIndex;
+            IsEye = isEye;
             HasBaseColor = hasBaseColor;
             BaseColor = baseColor;
             HasColor = hasColor;
