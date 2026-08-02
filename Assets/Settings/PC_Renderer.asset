@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: FullScreenPassRendererFeatureOldGUID
   m_EditorClassIdentifier: Unity.RenderPipelines.Universal.Runtime::FullScreenPassRendererFeature_OldGUID
   m_Active: 1
-  injectionPoint: 600
+  injectionPoint: 550
   fetchColorBuffer: 1
   requirements: 3
   passMaterial: {fileID: 2100000, guid: f4176af678b949cf9a2dc43de82ba157, type: 2}

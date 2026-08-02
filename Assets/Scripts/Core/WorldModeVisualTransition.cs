@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 /// <summary>
 /// WorldModeの見た目を、Playerを起点に広がる円形ワイプで切り替える。
@@ -29,9 +30,12 @@ public sealed class WorldModeVisualTransition : MonoBehaviour
 
     [SerializeField, Min(0.01f)] private float _transitionDuration = 0.6f;
     [SerializeField, Range(0.001f, 0.2f)] private float _edgeSoftness = 0.04f;
-    [Header("Background Colors")]
-    [InspectorName("クロ時のPlayer・背景色")]
-    [SerializeField] private Color _kuroBackground = Color.black;
+    [Header("Kuro Colors")]
+    [FormerlySerializedAs("_kuroBackground")]
+    [InspectorName("Kuro Player Color")]
+    [SerializeField] private Color _kuroPlayerColor = Color.black;
+    [InspectorName("Kuro Background Color")]
+    [SerializeField] private Color _kuroBackgroundColor = Color.black;
 
     [Header("Shiro Player Color Levels")]
     [Tooltip("クロ累計時間がLevel 1未満の時はLevel 1 Colorを使用します。")]
@@ -57,10 +61,26 @@ public sealed class WorldModeVisualTransition : MonoBehaviour
     [InspectorName("Level 5 Color（真っ黒）")]
     [SerializeField] private Color _level5Color = Color.black;
 
+    [Header("Shiro Background Color Levels")]
+    [InspectorName("Level 1 Background Color")]
+    [SerializeField] private Color _level1BackgroundColor = Color.white;
+    [InspectorName("Level 2 Background Color")]
+    [SerializeField] private Color _level2BackgroundColor =
+        new(0.75f, 0.75f, 0.75f, 1f);
+    [InspectorName("Level 3 Background Color")]
+    [SerializeField] private Color _level3BackgroundColor =
+        new(0.5f, 0.5f, 0.5f, 1f);
+    [InspectorName("Level 4 Background Color")]
+    [SerializeField] private Color _level4BackgroundColor =
+        new(0.25f, 0.25f, 0.25f, 1f);
+    [InspectorName("Level 5 Background Color")]
+    [SerializeField] private Color _level5BackgroundColor = Color.black;
+
     public bool IsTransitioning { get; private set; }
     public float TransitionProgress => _progress;
     public Vector2 TransitionOrigin => _origin;
     public Color CurrentShiroPlayerColor { get; private set; } = Color.white;
+    public Color CurrentShiroBackgroundColor { get; private set; } = Color.white;
     public int CurrentShiroColorLevel { get; private set; } = 1;
 
     private readonly List<MaterialColorBinding> _playerMaterials = new();
@@ -204,9 +224,8 @@ public sealed class WorldModeVisualTransition : MonoBehaviour
         Shader.SetGlobalFloat(FromModeHash, _fromMode);
         Shader.SetGlobalFloat(ToModeHash, _toMode);
         Shader.SetGlobalFloat(FeatherHash, feather);
-        // 背景とPlayer本体は同じ色値を共有する。
-        Shader.SetGlobalColor(ShiroBackgroundHash, CurrentShiroPlayerColor);
-        Shader.SetGlobalColor(KuroBackgroundHash, _kuroBackground);
+        Shader.SetGlobalColor(ShiroBackgroundHash, CurrentShiroBackgroundColor);
+        Shader.SetGlobalColor(KuroBackgroundHash, _kuroBackgroundColor);
 
         float playerMode = GetModeAtTransitionCenter(feather);
         ApplyPlayerMode(playerMode, CurrentShiroPlayerColor);
@@ -364,11 +383,29 @@ public sealed class WorldModeVisualTransition : MonoBehaviour
         return elapsedTime < _level4Time ? 4 : 5;
     }
 
+    public Color GetShiroBackgroundColor(float kuroElapsedTime)
+    {
+        switch (GetShiroColorLevel(kuroElapsedTime))
+        {
+            case 1:
+                return _level1BackgroundColor;
+            case 2:
+                return _level2BackgroundColor;
+            case 3:
+                return _level3BackgroundColor;
+            case 4:
+                return _level4BackgroundColor;
+            default:
+                return _level5BackgroundColor;
+        }
+    }
+
     private void UpdateCurrentShiroAppearance()
     {
         float elapsedTime = _worldModeManager.KuroElapsedTime;
         CurrentShiroColorLevel = GetShiroColorLevel(elapsedTime);
         CurrentShiroPlayerColor = GetShiroPlayerColor(elapsedTime);
+        CurrentShiroBackgroundColor = GetShiroBackgroundColor(elapsedTime);
     }
 
     private void OnValidate()
@@ -440,7 +477,7 @@ public sealed class WorldModeVisualTransition : MonoBehaviour
     {
         return isEye
             ? Invert(original)
-            : WithOriginalAlpha(_kuroBackground, original);
+            : WithOriginalAlpha(_kuroPlayerColor, original);
     }
 
     private void RestorePlayerColors()
