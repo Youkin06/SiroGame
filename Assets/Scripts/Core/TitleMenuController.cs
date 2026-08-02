@@ -18,30 +18,35 @@ public sealed class TitleMenuController : MonoBehaviour
     private RectTransform _selectRectTransform;
     private TMP_Text _startText;
     private TMP_Text _settingsText;
+    private GameObject _selectObject;
+    private GameObject _startObject;
+    private GameObject _settingsObject;
     private int _selectedIndex;
+    private bool _menuVisible = true;
 
     public int SelectedIndex => _selectedIndex;
+    public bool IsMenuVisible => _menuVisible;
     public event Action SettingsSelected;
 
     private void Awake()
     {
-        GameObject selectObject = GameObject.Find("select");
-        GameObject startObject = GameObject.Find("Start");
-        GameObject settingsObject = GameObject.Find("setting");
+        _selectObject = GameObject.Find("select");
+        _startObject = GameObject.Find("Start");
+        _settingsObject = GameObject.Find("setting");
 
-        if (selectObject != null)
+        if (_selectObject != null)
         {
-            _selectRectTransform = selectObject.GetComponent<RectTransform>();
+            _selectRectTransform = _selectObject.GetComponent<RectTransform>();
         }
 
-        if (startObject != null)
+        if (_startObject != null)
         {
-            _startText = startObject.GetComponent<TMP_Text>();
+            _startText = _startObject.GetComponent<TMP_Text>();
         }
 
-        if (settingsObject != null)
+        if (_settingsObject != null)
         {
-            _settingsText = settingsObject.GetComponent<TMP_Text>();
+            _settingsText = _settingsObject.GetComponent<TMP_Text>();
         }
 
         if (_selectRectTransform == null || _startText == null || _settingsText == null)
@@ -59,6 +64,11 @@ public sealed class TitleMenuController : MonoBehaviour
 
     private void Update()
     {
+        if (!_menuVisible)
+        {
+            return;
+        }
+
         Keyboard keyboard = Keyboard.current;
         if (keyboard == null)
         {
@@ -88,7 +98,7 @@ public sealed class TitleMenuController : MonoBehaviour
 
     public void MoveSelection(int direction)
     {
-        if (direction == 0)
+        if (!_menuVisible || direction == 0)
         {
             return;
         }
@@ -119,6 +129,11 @@ public sealed class TitleMenuController : MonoBehaviour
 
     public void ConfirmSelection()
     {
+        if (!_menuVisible)
+        {
+            return;
+        }
+
         if (_selectedIndex == StartIndex)
         {
             if (TileLoadingScreen.Instance == null)
@@ -140,5 +155,18 @@ public sealed class TitleMenuController : MonoBehaviour
 
         SettingsSelected?.Invoke();
         Debug.Log("設定が選択されました。設定画面は未接続です。", this);
+    }
+
+    public void SetMenuVisible(bool visible)
+    {
+        _menuVisible = visible;
+        _startObject.SetActive(visible);
+        _settingsObject.SetActive(visible);
+        _selectObject.SetActive(visible);
+
+        if (visible)
+        {
+            SetSelection(StartIndex);
+        }
     }
 }

@@ -9,6 +9,8 @@ using UnityEngine.SceneManagement;
 [RequireComponent(typeof(Collider))]
 public sealed class StageClearZone : MonoBehaviour
 {
+    private const string TitleSceneName = "TitleScene";
+
     private bool _hasTriggered;
 
     private void Awake()
@@ -48,18 +50,25 @@ public sealed class StageClearZone : MonoBehaviour
         }
 
         int nextBuildIndex = SceneManager.GetActiveScene().buildIndex + 1;
-        if (nextBuildIndex < 0 ||
-            nextBuildIndex >= SceneManager.sceneCountInBuildSettings)
+        if (nextBuildIndex < 0)
         {
             Debug.LogError(
-                "次のステージがBuild Settingsに登録されていません。" +
-                "現在のステージの直後へ次のシーンを追加してください。",
+                "現在のステージがBuild Settingsに登録されていません。",
                 this
             );
             return;
         }
 
         _hasTriggered = true;
+        if (nextBuildIndex >= SceneManager.sceneCountInBuildSettings)
+        {
+            loadingScreen.LoadFinalResultScene(
+                TitleSceneName,
+                worldModeManager.KuroElapsedTime
+            );
+            return;
+        }
+
         loadingScreen.LoadStageClearScene(
             nextBuildIndex,
             worldModeManager.KuroElapsedTime

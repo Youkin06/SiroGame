@@ -100,7 +100,10 @@ public sealed class TileLoadingScreen : MonoBehaviour
         }
 
         KuroTimeProgress.Reset();
-        _loadCoroutine = StartCoroutine(LoadSceneRoutine(sceneName, false, 0f));
+        GameResultState.Reset();
+        _loadCoroutine = StartCoroutine(
+            LoadSceneRoutine(sceneName, false, 0f, false)
+        );
     }
 
     /// <summary>Build Settingsに登録済みのシーン番号を指定して遷移する。</summary>
@@ -130,10 +133,40 @@ public sealed class TileLoadingScreen : MonoBehaviour
         );
     }
 
+    /// <summary>
+    /// 最終ステージ用。ゲージ表示後にTitleSceneへ戻し、リザルトを受け渡す。
+    /// </summary>
+    public void LoadFinalResultScene(
+        string titleSceneName,
+        float totalKuroElapsedTime
+    )
+    {
+        if (string.IsNullOrWhiteSpace(titleSceneName))
+        {
+            Debug.LogError("戻り先のTitleScene名が空です。", this);
+            return;
+        }
+
+        if (_loadCoroutine != null)
+        {
+            return;
+        }
+
+        _loadCoroutine = StartCoroutine(
+            LoadSceneRoutine(
+                titleSceneName,
+                true,
+                totalKuroElapsedTime,
+                true
+            )
+        );
+    }
+
     private IEnumerator LoadSceneRoutine(
         string sceneName,
         bool showStageClearGauge,
-        float totalKuroElapsedTime
+        float totalKuroElapsedTime,
+        bool prepareFinalResult = false
     )
     {
         AsyncOperation operation = SceneManager.LoadSceneAsync(sceneName);
@@ -147,7 +180,8 @@ public sealed class TileLoadingScreen : MonoBehaviour
         yield return RunTransition(
             operation,
             showStageClearGauge,
-            totalKuroElapsedTime
+            totalKuroElapsedTime,
+            prepareFinalResult
         );
     }
 
@@ -168,14 +202,16 @@ public sealed class TileLoadingScreen : MonoBehaviour
         yield return RunTransition(
             operation,
             showStageClearGauge,
-            totalKuroElapsedTime
+            totalKuroElapsedTime,
+            false
         );
     }
 
     private IEnumerator RunTransition(
         AsyncOperation operation,
         bool showStageClearGauge,
-        float totalKuroElapsedTime
+        float totalKuroElapsedTime,
+        bool prepareFinalResult
     )
     {
         SetVisible(true);
@@ -208,6 +244,14 @@ public sealed class TileLoadingScreen : MonoBehaviour
         if (showStageClearGauge)
         {
             KuroTimeProgress.CommitStageTotal(nextKuroTime);
+        }
+
+        if (prepareFinalResult)
+        {
+            GameResultState.Prepare(
+                nextKuroTime,
+                _stageClearGauge.MaximumKuroTime
+            );
         }
 
         operation.allowSceneActivation = true;

@@ -19,6 +19,8 @@ public sealed class StageClearGaugeView : MonoBehaviour
     private Transform _frameTransform;
     private float _fullWidth;
 
+    public float MaximumKuroTime => Mathf.Max(0.01f, _maximumKuroTime);
+
     private void Awake()
     {
         CacheChildren();
@@ -33,7 +35,7 @@ public sealed class StageClearGaugeView : MonoBehaviour
             yield break;
         }
 
-        float maximumTime = Mathf.Max(0.01f, _maximumKuroTime);
+        float maximumTime = MaximumKuroTime;
         float safeFrom = Mathf.Clamp01(fromKuroTime / maximumTime);
         float safeTo = Mathf.Clamp01(toKuroTime / maximumTime);
         float duration = Mathf.Max(0f, _displayDuration);
