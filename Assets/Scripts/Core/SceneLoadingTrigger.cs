@@ -5,7 +5,7 @@ using UnityEngine;
 /// </summary>
 public sealed class SceneLoadingTrigger : MonoBehaviour
 {
-    [SerializeField] private string _sceneName = "SampleScene";
+    [SerializeField] private string _sceneName = "Stage1";
 
     public void LoadConfiguredScene()
     {

@@ -12,16 +12,22 @@ public readonly struct GameResultSnapshot
     public float TotalKuroTime { get; }
     public float GaugeRatio { get; }
     public GameResultRank Rank { get; }
+    public float ClearTimeSeconds { get; }
+    public bool HasClearTime { get; }
 
     public GameResultSnapshot(
         float totalKuroTime,
         float gaugeRatio,
-        GameResultRank rank
+        GameResultRank rank,
+        float clearTimeSeconds,
+        bool hasClearTime
     )
     {
         TotalKuroTime = totalKuroTime;
         GaugeRatio = gaugeRatio;
         Rank = rank;
+        ClearTimeSeconds = clearTimeSeconds;
+        HasClearTime = hasClearTime;
     }
 }
 
@@ -47,10 +53,14 @@ public static class GameResultState
         float safeTotal = Mathf.Max(0f, totalKuroTime);
         float safeMaximum = Mathf.Max(0.01f, maximumKuroTime);
         float ratio = Mathf.Clamp01(safeTotal / safeMaximum);
+        bool hasClearTime =
+            GameClearTimeTracker.TryGetCompletedTime(out float clearTime);
         _pendingResult = new GameResultSnapshot(
             safeTotal,
             ratio,
-            EvaluateRank(ratio)
+            EvaluateRank(ratio),
+            clearTime,
+            hasClearTime
         );
         _hasPendingResult = true;
     }

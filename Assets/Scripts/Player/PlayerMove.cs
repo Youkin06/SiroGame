@@ -9,6 +9,7 @@ public class PlayerMove : MonoBehaviour
 {
     private const float GroundNormalThreshold = 0.5f;
     private const float LandingRelativeVelocityThreshold = 0.1f;
+    private const float FallDeathY = -5f;
     private static readonly int WalkAnimationHash = Animator.StringToHash("walk");
     private static readonly int JumpAnimationHash = Animator.StringToHash("jump");
     private static readonly int DeadAnimationHash = Animator.StringToHash("dead");
@@ -319,6 +320,13 @@ public class PlayerMove : MonoBehaviour
     
     void FixedUpdate()
     {
+        // 物理更新ではY座標が閾値を飛び越えることがあるため、完全一致ではなく以下で判定する。
+        if (!IsDead && _rigidbody.position.y <= FallDeathY)
+        {
+            Die();
+            return;
+        }
+
         if (IsDead)
         {
             return;

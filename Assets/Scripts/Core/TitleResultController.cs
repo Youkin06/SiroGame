@@ -22,6 +22,9 @@ public sealed class TitleResultController : MonoBehaviour
     [SerializeField, Min(0f)] private float _resultImageFadeDuration = 1f;
     [SerializeField, Min(0f)] private float _menuRevealDelay = 2f;
 
+    [Header("Unityroom Ranking")]
+    [SerializeField, Min(1)] private int _clearTimeBoardNo = 1;
+
     [Header("Clear Colors")]
     [SerializeField] private Color _clearPlayerColor = Color.white;
     [SerializeField] private Color _clearBackgroundColor =
@@ -84,14 +87,24 @@ public sealed class TitleResultController : MonoBehaviour
 
         if (!_isResultScreen)
         {
+            BgmManager.Instance?.PlayTitleBgm();
             ShowInitialTitle();
             return;
         }
 
+        BgmManager.Instance?.PlayResultBgm(_result.Rank);
         _selectedVisual = GetVisual(_result.Rank);
         PrepareResultVisual(_selectedVisual);
         _titleMenu.SetMenuVisible(false);
         ApplyResultColors(_result.Rank);
+
+        if (_result.Rank == GameResultRank.Clear && _result.HasClearTime)
+        {
+            UnityroomClearTimeRanking.Submit(
+                _clearTimeBoardNo,
+                _result.ClearTimeSeconds
+            );
+        }
     }
 
     private IEnumerator Start()

@@ -12,6 +12,7 @@ public sealed class TitleMenuController : MonoBehaviour
 {
     private const int StartIndex = 0;
     private const int SettingsIndex = 1;
+    private const string FirstStageSceneName = "Stage1";
     private const float StartSelectY = -76f;
     private const float SettingsSelectY = -186f;
 
@@ -169,7 +170,8 @@ public sealed class TitleMenuController : MonoBehaviour
             if (!TileLoadingScreen.Instance.IsLoading)
             {
                 PlayDecisionSound();
-                TileLoadingScreen.Instance.LoadNewGameScene("SampleScene");
+                GameClearTimeTracker.StartNewRun();
+                TileLoadingScreen.Instance.LoadNewGameScene(FirstStageSceneName);
             }
 
             return;

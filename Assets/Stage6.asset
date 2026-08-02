@@ -10,203 +10,123 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 9cf7e674b87f4577a32357e31b9b841e, type: 3}
-  m_Name: Stage2
+  m_Name: Stage6
   m_EditorClassIdentifier: Assembly-CSharp::SiroGame.StageBuilder.BoxStageData
   _cellSize: {x: 1, y: 1, z: 1}
   _tilePalette:
   - {fileID: 11400000, guid: 88c65eca82c0f46399dd5ffaf0613790, type: 2}
   _cells:
-  - _position: {x: 1, y: 0, z: 0}
+  - _position: {x: 5, y: 0, z: 0}
     _cellType: 0
     _tile: {fileID: 11400000, guid: 88c65eca82c0f46399dd5ffaf0613790, type: 2}
     _boxSize: {x: 1, y: 1, z: 1}
     _holeDepth: 5
-  - _position: {x: 0, y: 0, z: 0}
+  - _position: {x: 5, y: 0, z: -1}
     _cellType: 0
     _tile: {fileID: 11400000, guid: 88c65eca82c0f46399dd5ffaf0613790, type: 2}
     _boxSize: {x: 1, y: 1, z: 1}
     _holeDepth: 5
-  - _position: {x: -1, y: 0, z: 0}
+  - _position: {x: 5, y: 0, z: -2}
     _cellType: 0
     _tile: {fileID: 11400000, guid: 88c65eca82c0f46399dd5ffaf0613790, type: 2}
     _boxSize: {x: 1, y: 1, z: 1}
     _holeDepth: 5
-  - _position: {x: -2, y: 0, z: 0}
+  - _position: {x: 4, y: 0, z: -3}
     _cellType: 0
     _tile: {fileID: 11400000, guid: 88c65eca82c0f46399dd5ffaf0613790, type: 2}
     _boxSize: {x: 1, y: 1, z: 1}
     _holeDepth: 5
-  - _position: {x: -2, y: 0, z: -1}
+  - _position: {x: 3, y: 0, z: -3}
     _cellType: 0
     _tile: {fileID: 11400000, guid: 88c65eca82c0f46399dd5ffaf0613790, type: 2}
     _boxSize: {x: 1, y: 1, z: 1}
     _holeDepth: 5
-  - _position: {x: -1, y: 0, z: -1}
+  - _position: {x: 3, y: 0, z: -2}
     _cellType: 0
     _tile: {fileID: 11400000, guid: 88c65eca82c0f46399dd5ffaf0613790, type: 2}
     _boxSize: {x: 1, y: 1, z: 1}
     _holeDepth: 5
-  - _position: {x: 0, y: 0, z: -1}
+  - _position: {x: 3, y: 0, z: -1}
     _cellType: 0
     _tile: {fileID: 11400000, guid: 88c65eca82c0f46399dd5ffaf0613790, type: 2}
     _boxSize: {x: 1, y: 1, z: 1}
     _holeDepth: 5
-  - _position: {x: 1, y: 0, z: -1}
+  - _position: {x: 3, y: 0, z: 0}
     _cellType: 0
     _tile: {fileID: 11400000, guid: 88c65eca82c0f46399dd5ffaf0613790, type: 2}
     _boxSize: {x: 1, y: 1, z: 1}
     _holeDepth: 5
-  - _position: {x: -2, y: 0, z: 1}
+  - _position: {x: 3, y: 0, z: 1}
     _cellType: 0
     _tile: {fileID: 11400000, guid: 88c65eca82c0f46399dd5ffaf0613790, type: 2}
     _boxSize: {x: 1, y: 1, z: 1}
     _holeDepth: 5
-  - _position: {x: -2, y: 0, z: 2}
+  - _position: {x: 4, y: 0, z: 1}
     _cellType: 0
     _tile: {fileID: 11400000, guid: 88c65eca82c0f46399dd5ffaf0613790, type: 2}
     _boxSize: {x: 1, y: 1, z: 1}
     _holeDepth: 5
-  - _position: {x: -2, y: 0, z: 3}
+  - _position: {x: 4, y: 0, z: 0}
     _cellType: 0
     _tile: {fileID: 11400000, guid: 88c65eca82c0f46399dd5ffaf0613790, type: 2}
     _boxSize: {x: 1, y: 1, z: 1}
     _holeDepth: 5
-  - _position: {x: -1, y: 0, z: 3}
+  - _position: {x: 4, y: 0, z: -1}
     _cellType: 0
     _tile: {fileID: 11400000, guid: 88c65eca82c0f46399dd5ffaf0613790, type: 2}
     _boxSize: {x: 1, y: 1, z: 1}
     _holeDepth: 5
-  - _position: {x: 0, y: 0, z: 3}
+  - _position: {x: 2, y: 0, z: 0}
     _cellType: 0
     _tile: {fileID: 11400000, guid: 88c65eca82c0f46399dd5ffaf0613790, type: 2}
     _boxSize: {x: 1, y: 1, z: 1}
     _holeDepth: 5
-  - _position: {x: 1, y: 0, z: 3}
+  - _position: {x: 2, y: 0, z: -1}
     _cellType: 0
     _tile: {fileID: 11400000, guid: 88c65eca82c0f46399dd5ffaf0613790, type: 2}
     _boxSize: {x: 1, y: 1, z: 1}
     _holeDepth: 5
-  - _position: {x: 1, y: 0, z: 2}
+  - _position: {x: 2, y: 0, z: -2}
     _cellType: 0
     _tile: {fileID: 11400000, guid: 88c65eca82c0f46399dd5ffaf0613790, type: 2}
     _boxSize: {x: 1, y: 1, z: 1}
     _holeDepth: 5
-  - _position: {x: 1, y: 0, z: 1}
+  - _position: {x: 4, y: 0, z: -2}
     _cellType: 0
     _tile: {fileID: 11400000, guid: 88c65eca82c0f46399dd5ffaf0613790, type: 2}
     _boxSize: {x: 1, y: 1, z: 1}
     _holeDepth: 5
-  - _position: {x: -1, y: 0, z: 2}
+  - _position: {x: 5, y: 0, z: 4}
     _cellType: 0
     _tile: {fileID: 11400000, guid: 88c65eca82c0f46399dd5ffaf0613790, type: 2}
     _boxSize: {x: 1, y: 1, z: 1}
     _holeDepth: 5
-  - _position: {x: 0, y: 0, z: 2}
+  - _position: {x: 5, y: 0, z: 5}
     _cellType: 0
     _tile: {fileID: 11400000, guid: 88c65eca82c0f46399dd5ffaf0613790, type: 2}
     _boxSize: {x: 1, y: 1, z: 1}
     _holeDepth: 5
-  - _position: {x: 0, y: 0, z: 1}
+  - _position: {x: 5, y: 0, z: 6}
     _cellType: 0
     _tile: {fileID: 11400000, guid: 88c65eca82c0f46399dd5ffaf0613790, type: 2}
     _boxSize: {x: 1, y: 1, z: 1}
     _holeDepth: 5
-  - _position: {x: -1, y: 0, z: 1}
+  - _position: {x: 5, y: 0, z: 7}
     _cellType: 0
     _tile: {fileID: 11400000, guid: 88c65eca82c0f46399dd5ffaf0613790, type: 2}
     _boxSize: {x: 1, y: 1, z: 1}
     _holeDepth: 5
-  - _position: {x: -1, y: 0, z: 4}
+  - _position: {x: 5, y: 0, z: 8}
     _cellType: 0
     _tile: {fileID: 11400000, guid: 88c65eca82c0f46399dd5ffaf0613790, type: 2}
     _boxSize: {x: 1, y: 1, z: 1}
     _holeDepth: 5
-  - _position: {x: -2, y: 0, z: 4}
+  - _position: {x: 4, y: 0, z: 8}
     _cellType: 0
     _tile: {fileID: 11400000, guid: 88c65eca82c0f46399dd5ffaf0613790, type: 2}
     _boxSize: {x: 1, y: 1, z: 1}
     _holeDepth: 5
-  - _position: {x: -1, y: 0, z: 5}
-    _cellType: 0
-    _tile: {fileID: 11400000, guid: 88c65eca82c0f46399dd5ffaf0613790, type: 2}
-    _boxSize: {x: 1, y: 1, z: 1}
-    _holeDepth: 5
-  - _position: {x: -2, y: 0, z: 5}
-    _cellType: 0
-    _tile: {fileID: 11400000, guid: 88c65eca82c0f46399dd5ffaf0613790, type: 2}
-    _boxSize: {x: 1, y: 1, z: 1}
-    _holeDepth: 5
-  - _position: {x: -1, y: 0, z: 6}
-    _cellType: 0
-    _tile: {fileID: 11400000, guid: 88c65eca82c0f46399dd5ffaf0613790, type: 2}
-    _boxSize: {x: 1, y: 1, z: 1}
-    _holeDepth: 5
-  - _position: {x: -2, y: 0, z: 6}
-    _cellType: 0
-    _tile: {fileID: 11400000, guid: 88c65eca82c0f46399dd5ffaf0613790, type: 2}
-    _boxSize: {x: 1, y: 1, z: 1}
-    _holeDepth: 5
-  - _position: {x: 1, y: 0, z: 7}
-    _cellType: 0
-    _tile: {fileID: 11400000, guid: 88c65eca82c0f46399dd5ffaf0613790, type: 2}
-    _boxSize: {x: 1, y: 1, z: 1}
-    _holeDepth: 5
-  - _position: {x: 1, y: 0, z: 8}
-    _cellType: 0
-    _tile: {fileID: 11400000, guid: 88c65eca82c0f46399dd5ffaf0613790, type: 2}
-    _boxSize: {x: 1, y: 1, z: 1}
-    _holeDepth: 5
-  - _position: {x: 1, y: 0, z: 9}
-    _cellType: 0
-    _tile: {fileID: 11400000, guid: 88c65eca82c0f46399dd5ffaf0613790, type: 2}
-    _boxSize: {x: 1, y: 1, z: 1}
-    _holeDepth: 5
-  - _position: {x: 0, y: 0, z: 9}
-    _cellType: 0
-    _tile: {fileID: 11400000, guid: 88c65eca82c0f46399dd5ffaf0613790, type: 2}
-    _boxSize: {x: 1, y: 1, z: 1}
-    _holeDepth: 5
-  - _position: {x: -1, y: 0, z: 9}
-    _cellType: 0
-    _tile: {fileID: 11400000, guid: 88c65eca82c0f46399dd5ffaf0613790, type: 2}
-    _boxSize: {x: 1, y: 1, z: 1}
-    _holeDepth: 5
-  - _position: {x: -2, y: 0, z: 9}
-    _cellType: 0
-    _tile: {fileID: 11400000, guid: 88c65eca82c0f46399dd5ffaf0613790, type: 2}
-    _boxSize: {x: 1, y: 1, z: 1}
-    _holeDepth: 5
-  - _position: {x: -2, y: 0, z: 8}
-    _cellType: 0
-    _tile: {fileID: 11400000, guid: 88c65eca82c0f46399dd5ffaf0613790, type: 2}
-    _boxSize: {x: 1, y: 1, z: 1}
-    _holeDepth: 5
-  - _position: {x: -2, y: 0, z: 7}
-    _cellType: 0
-    _tile: {fileID: 11400000, guid: 88c65eca82c0f46399dd5ffaf0613790, type: 2}
-    _boxSize: {x: 1, y: 1, z: 1}
-    _holeDepth: 5
-  - _position: {x: -1, y: 0, z: 7}
-    _cellType: 0
-    _tile: {fileID: 11400000, guid: 88c65eca82c0f46399dd5ffaf0613790, type: 2}
-    _boxSize: {x: 1, y: 1, z: 1}
-    _holeDepth: 5
-  - _position: {x: 0, y: 0, z: 7}
-    _cellType: 0
-    _tile: {fileID: 11400000, guid: 88c65eca82c0f46399dd5ffaf0613790, type: 2}
-    _boxSize: {x: 1, y: 1, z: 1}
-    _holeDepth: 5
-  - _position: {x: 0, y: 0, z: 8}
-    _cellType: 0
-    _tile: {fileID: 11400000, guid: 88c65eca82c0f46399dd5ffaf0613790, type: 2}
-    _boxSize: {x: 1, y: 1, z: 1}
-    _holeDepth: 5
-  - _position: {x: -1, y: 0, z: 8}
-    _cellType: 0
-    _tile: {fileID: 11400000, guid: 88c65eca82c0f46399dd5ffaf0613790, type: 2}
-    _boxSize: {x: 1, y: 1, z: 1}
-    _holeDepth: 5
-  - _position: {x: 2, y: 0, z: 9}
+  - _position: {x: 3, y: 0, z: 8}
     _cellType: 0
     _tile: {fileID: 11400000, guid: 88c65eca82c0f46399dd5ffaf0613790, type: 2}
     _boxSize: {x: 1, y: 1, z: 1}
@@ -221,67 +141,22 @@ MonoBehaviour:
     _tile: {fileID: 11400000, guid: 88c65eca82c0f46399dd5ffaf0613790, type: 2}
     _boxSize: {x: 1, y: 1, z: 1}
     _holeDepth: 5
+  - _position: {x: 2, y: 0, z: 6}
+    _cellType: 0
+    _tile: {fileID: 11400000, guid: 88c65eca82c0f46399dd5ffaf0613790, type: 2}
+    _boxSize: {x: 1, y: 1, z: 1}
+    _holeDepth: 5
+  - _position: {x: 2, y: 0, z: 5}
+    _cellType: 0
+    _tile: {fileID: 11400000, guid: 88c65eca82c0f46399dd5ffaf0613790, type: 2}
+    _boxSize: {x: 1, y: 1, z: 1}
+    _holeDepth: 5
   - _position: {x: 2, y: 0, z: 4}
     _cellType: 0
     _tile: {fileID: 11400000, guid: 88c65eca82c0f46399dd5ffaf0613790, type: 2}
     _boxSize: {x: 1, y: 1, z: 1}
     _holeDepth: 5
-  - _position: {x: 2, y: 0, z: 3}
-    _cellType: 0
-    _tile: {fileID: 11400000, guid: 88c65eca82c0f46399dd5ffaf0613790, type: 2}
-    _boxSize: {x: 1, y: 1, z: 1}
-    _holeDepth: 5
-  - _position: {x: 2, y: 0, z: 2}
-    _cellType: 0
-    _tile: {fileID: 11400000, guid: 88c65eca82c0f46399dd5ffaf0613790, type: 2}
-    _boxSize: {x: 1, y: 1, z: 1}
-    _holeDepth: 5
-  - _position: {x: 2, y: 0, z: 1}
-    _cellType: 0
-    _tile: {fileID: 11400000, guid: 88c65eca82c0f46399dd5ffaf0613790, type: 2}
-    _boxSize: {x: 1, y: 1, z: 1}
-    _holeDepth: 5
-  - _position: {x: 2, y: 0, z: 0}
-    _cellType: 0
-    _tile: {fileID: 11400000, guid: 88c65eca82c0f46399dd5ffaf0613790, type: 2}
-    _boxSize: {x: 1, y: 1, z: 1}
-    _holeDepth: 5
-  - _position: {x: 3, y: 0, z: 7}
-    _cellType: 0
-    _tile: {fileID: 11400000, guid: 88c65eca82c0f46399dd5ffaf0613790, type: 2}
-    _boxSize: {x: 1, y: 1, z: 1}
-    _holeDepth: 5
-  - _position: {x: 4, y: 0, z: 7}
-    _cellType: 0
-    _tile: {fileID: 11400000, guid: 88c65eca82c0f46399dd5ffaf0613790, type: 2}
-    _boxSize: {x: 1, y: 1, z: 1}
-    _holeDepth: 5
-  - _position: {x: 5, y: 0, z: 7}
-    _cellType: 0
-    _tile: {fileID: 11400000, guid: 88c65eca82c0f46399dd5ffaf0613790, type: 2}
-    _boxSize: {x: 1, y: 1, z: 1}
-    _holeDepth: 5
-  - _position: {x: 5, y: 0, z: 6}
-    _cellType: 0
-    _tile: {fileID: 11400000, guid: 88c65eca82c0f46399dd5ffaf0613790, type: 2}
-    _boxSize: {x: 1, y: 1, z: 1}
-    _holeDepth: 5
-  - _position: {x: 6, y: 0, z: 6}
-    _cellType: 0
-    _tile: {fileID: 11400000, guid: 88c65eca82c0f46399dd5ffaf0613790, type: 2}
-    _boxSize: {x: 1, y: 1, z: 1}
-    _holeDepth: 5
-  - _position: {x: 5, y: 0, z: 5}
-    _cellType: 0
-    _tile: {fileID: 11400000, guid: 88c65eca82c0f46399dd5ffaf0613790, type: 2}
-    _boxSize: {x: 1, y: 1, z: 1}
-    _holeDepth: 5
-  - _position: {x: 5, y: 0, z: 4}
-    _cellType: 0
-    _tile: {fileID: 11400000, guid: 88c65eca82c0f46399dd5ffaf0613790, type: 2}
-    _boxSize: {x: 1, y: 1, z: 1}
-    _holeDepth: 5
-  - _position: {x: 4, y: 0, z: 4}
+  - _position: {x: 3, y: 0, z: 5}
     _cellType: 0
     _tile: {fileID: 11400000, guid: 88c65eca82c0f46399dd5ffaf0613790, type: 2}
     _boxSize: {x: 1, y: 1, z: 1}
@@ -296,37 +171,12 @@ MonoBehaviour:
     _tile: {fileID: 11400000, guid: 88c65eca82c0f46399dd5ffaf0613790, type: 2}
     _boxSize: {x: 1, y: 1, z: 1}
     _holeDepth: 5
-  - _position: {x: 3, y: 0, z: 5}
+  - _position: {x: 4, y: 0, z: 7}
     _cellType: 0
     _tile: {fileID: 11400000, guid: 88c65eca82c0f46399dd5ffaf0613790, type: 2}
     _boxSize: {x: 1, y: 1, z: 1}
     _holeDepth: 5
-  - _position: {x: 3, y: 0, z: 4}
-    _cellType: 0
-    _tile: {fileID: 11400000, guid: 88c65eca82c0f46399dd5ffaf0613790, type: 2}
-    _boxSize: {x: 1, y: 1, z: 1}
-    _holeDepth: 5
-  - _position: {x: 4, y: 0, z: 3}
-    _cellType: 0
-    _tile: {fileID: 11400000, guid: 88c65eca82c0f46399dd5ffaf0613790, type: 2}
-    _boxSize: {x: 1, y: 1, z: 1}
-    _holeDepth: 5
-  - _position: {x: 5, y: 0, z: 3}
-    _cellType: 0
-    _tile: {fileID: 11400000, guid: 88c65eca82c0f46399dd5ffaf0613790, type: 2}
-    _boxSize: {x: 1, y: 1, z: 1}
-    _holeDepth: 5
-  - _position: {x: 4, y: 0, z: 2}
-    _cellType: 0
-    _tile: {fileID: 11400000, guid: 88c65eca82c0f46399dd5ffaf0613790, type: 2}
-    _boxSize: {x: 1, y: 1, z: 1}
-    _holeDepth: 5
-  - _position: {x: 3, y: 0, z: 2}
-    _cellType: 0
-    _tile: {fileID: 11400000, guid: 88c65eca82c0f46399dd5ffaf0613790, type: 2}
-    _boxSize: {x: 1, y: 1, z: 1}
-    _holeDepth: 5
-  - _position: {x: 3, y: 0, z: 3}
+  - _position: {x: 3, y: 0, z: 7}
     _cellType: 0
     _tile: {fileID: 11400000, guid: 88c65eca82c0f46399dd5ffaf0613790, type: 2}
     _boxSize: {x: 1, y: 1, z: 1}
@@ -336,207 +186,27 @@ MonoBehaviour:
     _tile: {fileID: 11400000, guid: 88c65eca82c0f46399dd5ffaf0613790, type: 2}
     _boxSize: {x: 1, y: 1, z: 1}
     _holeDepth: 5
-  - _position: {x: 6, y: 0, z: 7}
+  - _position: {x: -3, y: 0, z: -3}
     _cellType: 0
     _tile: {fileID: 11400000, guid: 88c65eca82c0f46399dd5ffaf0613790, type: 2}
     _boxSize: {x: 1, y: 1, z: 1}
     _holeDepth: 5
-  - _position: {x: 6, y: 0, z: 5}
+  - _position: {x: -2, y: 0, z: -2}
     _cellType: 0
     _tile: {fileID: 11400000, guid: 88c65eca82c0f46399dd5ffaf0613790, type: 2}
     _boxSize: {x: 1, y: 1, z: 1}
     _holeDepth: 5
-  - _position: {x: 3, y: 1, z: 7}
+  - _position: {x: -2, y: 0, z: 0}
     _cellType: 0
     _tile: {fileID: 11400000, guid: 88c65eca82c0f46399dd5ffaf0613790, type: 2}
     _boxSize: {x: 1, y: 1, z: 1}
     _holeDepth: 5
-  - _position: {x: 3, y: 1, z: 6}
+  - _position: {x: -2, y: 0, z: -1}
     _cellType: 0
     _tile: {fileID: 11400000, guid: 88c65eca82c0f46399dd5ffaf0613790, type: 2}
     _boxSize: {x: 1, y: 1, z: 1}
     _holeDepth: 5
-  - _position: {x: 3, y: 1, z: 5}
-    _cellType: 0
-    _tile: {fileID: 11400000, guid: 88c65eca82c0f46399dd5ffaf0613790, type: 2}
-    _boxSize: {x: 1, y: 1, z: 1}
-    _holeDepth: 5
-  - _position: {x: 3, y: 1, z: 4}
-    _cellType: 0
-    _tile: {fileID: 11400000, guid: 88c65eca82c0f46399dd5ffaf0613790, type: 2}
-    _boxSize: {x: 1, y: 1, z: 1}
-    _holeDepth: 5
-  - _position: {x: 4, y: 1, z: 4}
-    _cellType: 0
-    _tile: {fileID: 11400000, guid: 88c65eca82c0f46399dd5ffaf0613790, type: 2}
-    _boxSize: {x: 1, y: 1, z: 1}
-    _holeDepth: 5
-  - _position: {x: 4, y: 1, z: 5}
-    _cellType: 0
-    _tile: {fileID: 11400000, guid: 88c65eca82c0f46399dd5ffaf0613790, type: 2}
-    _boxSize: {x: 1, y: 1, z: 1}
-    _holeDepth: 5
-  - _position: {x: 4, y: 1, z: 6}
-    _cellType: 0
-    _tile: {fileID: 11400000, guid: 88c65eca82c0f46399dd5ffaf0613790, type: 2}
-    _boxSize: {x: 1, y: 1, z: 1}
-    _holeDepth: 5
-  - _position: {x: 5, y: 1, z: 6}
-    _cellType: 0
-    _tile: {fileID: 11400000, guid: 88c65eca82c0f46399dd5ffaf0613790, type: 2}
-    _boxSize: {x: 1, y: 1, z: 1}
-    _holeDepth: 5
-  - _position: {x: 5, y: 1, z: 7}
-    _cellType: 0
-    _tile: {fileID: 11400000, guid: 88c65eca82c0f46399dd5ffaf0613790, type: 2}
-    _boxSize: {x: 1, y: 1, z: 1}
-    _holeDepth: 5
-  - _position: {x: 4, y: 1, z: 7}
-    _cellType: 0
-    _tile: {fileID: 11400000, guid: 88c65eca82c0f46399dd5ffaf0613790, type: 2}
-    _boxSize: {x: 1, y: 1, z: 1}
-    _holeDepth: 5
-  - _position: {x: 6, y: 1, z: 7}
-    _cellType: 0
-    _tile: {fileID: 11400000, guid: 88c65eca82c0f46399dd5ffaf0613790, type: 2}
-    _boxSize: {x: 1, y: 1, z: 1}
-    _holeDepth: 5
-  - _position: {x: 6, y: 1, z: 6}
-    _cellType: 0
-    _tile: {fileID: 11400000, guid: 88c65eca82c0f46399dd5ffaf0613790, type: 2}
-    _boxSize: {x: 1, y: 1, z: 1}
-    _holeDepth: 5
-  - _position: {x: 5, y: 1, z: 5}
-    _cellType: 0
-    _tile: {fileID: 11400000, guid: 88c65eca82c0f46399dd5ffaf0613790, type: 2}
-    _boxSize: {x: 1, y: 1, z: 1}
-    _holeDepth: 5
-  - _position: {x: 6, y: 1, z: 5}
-    _cellType: 0
-    _tile: {fileID: 11400000, guid: 88c65eca82c0f46399dd5ffaf0613790, type: 2}
-    _boxSize: {x: 1, y: 1, z: 1}
-    _holeDepth: 5
-  - _position: {x: 5, y: 1, z: 4}
-    _cellType: 0
-    _tile: {fileID: 11400000, guid: 88c65eca82c0f46399dd5ffaf0613790, type: 2}
-    _boxSize: {x: 1, y: 1, z: 1}
-    _holeDepth: 5
-  - _position: {x: 5, y: 2, z: 6}
-    _cellType: 0
-    _tile: {fileID: 11400000, guid: 88c65eca82c0f46399dd5ffaf0613790, type: 2}
-    _boxSize: {x: 1, y: 1, z: 1}
-    _holeDepth: 5
-  - _position: {x: 5, y: 2, z: 7}
-    _cellType: 0
-    _tile: {fileID: 11400000, guid: 88c65eca82c0f46399dd5ffaf0613790, type: 2}
-    _boxSize: {x: 1, y: 1, z: 1}
-    _holeDepth: 5
-  - _position: {x: 6, y: 2, z: 7}
-    _cellType: 0
-    _tile: {fileID: 11400000, guid: 88c65eca82c0f46399dd5ffaf0613790, type: 2}
-    _boxSize: {x: 1, y: 1, z: 1}
-    _holeDepth: 5
-  - _position: {x: 6, y: 2, z: 6}
-    _cellType: 0
-    _tile: {fileID: 11400000, guid: 88c65eca82c0f46399dd5ffaf0613790, type: 2}
-    _boxSize: {x: 1, y: 1, z: 1}
-    _holeDepth: 5
-  - _position: {x: 4, y: 2, z: 6}
-    _cellType: 0
-    _tile: {fileID: 11400000, guid: 88c65eca82c0f46399dd5ffaf0613790, type: 2}
-    _boxSize: {x: 1, y: 1, z: 1}
-    _holeDepth: 5
-  - _position: {x: 4, y: 2, z: 7}
-    _cellType: 0
-    _tile: {fileID: 11400000, guid: 88c65eca82c0f46399dd5ffaf0613790, type: 2}
-    _boxSize: {x: 1, y: 1, z: 1}
-    _holeDepth: 5
-  - _position: {x: 3, y: 0, z: 8}
-    _cellType: 0
-    _tile: {fileID: 11400000, guid: 88c65eca82c0f46399dd5ffaf0613790, type: 2}
-    _boxSize: {x: 1, y: 1, z: 1}
-    _holeDepth: 5
-  - _position: {x: 3, y: 0, z: 9}
-    _cellType: 0
-    _tile: {fileID: 11400000, guid: 88c65eca82c0f46399dd5ffaf0613790, type: 2}
-    _boxSize: {x: 1, y: 1, z: 1}
-    _holeDepth: 5
-  - _position: {x: 4, y: 0, z: 9}
-    _cellType: 0
-    _tile: {fileID: 11400000, guid: 88c65eca82c0f46399dd5ffaf0613790, type: 2}
-    _boxSize: {x: 1, y: 1, z: 1}
-    _holeDepth: 5
-  - _position: {x: 4, y: 0, z: 8}
-    _cellType: 0
-    _tile: {fileID: 11400000, guid: 88c65eca82c0f46399dd5ffaf0613790, type: 2}
-    _boxSize: {x: 1, y: 1, z: 1}
-    _holeDepth: 5
-  - _position: {x: 5, y: 0, z: 8}
-    _cellType: 0
-    _tile: {fileID: 11400000, guid: 88c65eca82c0f46399dd5ffaf0613790, type: 2}
-    _boxSize: {x: 1, y: 1, z: 1}
-    _holeDepth: 5
-  - _position: {x: 5, y: 0, z: 9}
-    _cellType: 0
-    _tile: {fileID: 11400000, guid: 88c65eca82c0f46399dd5ffaf0613790, type: 2}
-    _boxSize: {x: 1, y: 1, z: 1}
-    _holeDepth: 5
-  - _position: {x: 6, y: 0, z: 8}
-    _cellType: 0
-    _tile: {fileID: 11400000, guid: 88c65eca82c0f46399dd5ffaf0613790, type: 2}
-    _boxSize: {x: 1, y: 1, z: 1}
-    _holeDepth: 5
-  - _position: {x: 6, y: 0, z: 9}
-    _cellType: 0
-    _tile: {fileID: 11400000, guid: 88c65eca82c0f46399dd5ffaf0613790, type: 2}
-    _boxSize: {x: 1, y: 1, z: 1}
-    _holeDepth: 5
-  - _position: {x: 4, y: 1, z: 8}
-    _cellType: 0
-    _tile: {fileID: 11400000, guid: 88c65eca82c0f46399dd5ffaf0613790, type: 2}
-    _boxSize: {x: 1, y: 1, z: 1}
-    _holeDepth: 5
-  - _position: {x: 5, y: 1, z: 8}
-    _cellType: 0
-    _tile: {fileID: 11400000, guid: 88c65eca82c0f46399dd5ffaf0613790, type: 2}
-    _boxSize: {x: 1, y: 1, z: 1}
-    _holeDepth: 5
-  - _position: {x: 6, y: 1, z: 8}
-    _cellType: 0
-    _tile: {fileID: 11400000, guid: 88c65eca82c0f46399dd5ffaf0613790, type: 2}
-    _boxSize: {x: 1, y: 1, z: 1}
-    _holeDepth: 5
-  - _position: {x: -3, y: 1, z: 9}
-    _cellType: 0
-    _tile: {fileID: 11400000, guid: 88c65eca82c0f46399dd5ffaf0613790, type: 2}
-    _boxSize: {x: 1, y: 1, z: 1}
-    _holeDepth: 5
-  - _position: {x: -3, y: 1, z: 8}
-    _cellType: 0
-    _tile: {fileID: 11400000, guid: 88c65eca82c0f46399dd5ffaf0613790, type: 2}
-    _boxSize: {x: 1, y: 1, z: 1}
-    _holeDepth: 5
-  - _position: {x: -3, y: 1, z: 7}
-    _cellType: 0
-    _tile: {fileID: 11400000, guid: 88c65eca82c0f46399dd5ffaf0613790, type: 2}
-    _boxSize: {x: 1, y: 1, z: 1}
-    _holeDepth: 5
-  - _position: {x: -3, y: 1, z: 6}
-    _cellType: 0
-    _tile: {fileID: 11400000, guid: 88c65eca82c0f46399dd5ffaf0613790, type: 2}
-    _boxSize: {x: 1, y: 1, z: 1}
-    _holeDepth: 5
-  - _position: {x: -3, y: 1, z: 5}
-    _cellType: 0
-    _tile: {fileID: 11400000, guid: 88c65eca82c0f46399dd5ffaf0613790, type: 2}
-    _boxSize: {x: 1, y: 1, z: 1}
-    _holeDepth: 5
-  - _position: {x: -3, y: 1, z: 4}
-    _cellType: 0
-    _tile: {fileID: 11400000, guid: 88c65eca82c0f46399dd5ffaf0613790, type: 2}
-    _boxSize: {x: 1, y: 1, z: 1}
-    _holeDepth: 5
-  - _position: {x: -3, y: 1, z: 3}
+  - _position: {x: -3, y: 0, z: 3}
     _cellType: 0
     _tile: {fileID: 11400000, guid: 88c65eca82c0f46399dd5ffaf0613790, type: 2}
     _boxSize: {x: 1, y: 1, z: 1}
@@ -556,6 +226,71 @@ MonoBehaviour:
     _tile: {fileID: 11400000, guid: 88c65eca82c0f46399dd5ffaf0613790, type: 2}
     _boxSize: {x: 1, y: 1, z: 1}
     _holeDepth: 5
+  - _position: {x: -3, y: 0, z: 4}
+    _cellType: 0
+    _tile: {fileID: 11400000, guid: 88c65eca82c0f46399dd5ffaf0613790, type: 2}
+    _boxSize: {x: 1, y: 1, z: 1}
+    _holeDepth: 5
+  - _position: {x: -4, y: 0, z: 4}
+    _cellType: 0
+    _tile: {fileID: 11400000, guid: 88c65eca82c0f46399dd5ffaf0613790, type: 2}
+    _boxSize: {x: 1, y: 1, z: 1}
+    _holeDepth: 5
+  - _position: {x: -5, y: 0, z: 4}
+    _cellType: 0
+    _tile: {fileID: 11400000, guid: 88c65eca82c0f46399dd5ffaf0613790, type: 2}
+    _boxSize: {x: 1, y: 1, z: 1}
+    _holeDepth: 5
+  - _position: {x: -6, y: 0, z: 4}
+    _cellType: 0
+    _tile: {fileID: 11400000, guid: 88c65eca82c0f46399dd5ffaf0613790, type: 2}
+    _boxSize: {x: 1, y: 1, z: 1}
+    _holeDepth: 5
+  - _position: {x: -6, y: 0, z: 3}
+    _cellType: 0
+    _tile: {fileID: 11400000, guid: 88c65eca82c0f46399dd5ffaf0613790, type: 2}
+    _boxSize: {x: 1, y: 1, z: 1}
+    _holeDepth: 5
+  - _position: {x: -6, y: 0, z: 0}
+    _cellType: 0
+    _tile: {fileID: 11400000, guid: 88c65eca82c0f46399dd5ffaf0613790, type: 2}
+    _boxSize: {x: 1, y: 1, z: 1}
+    _holeDepth: 5
+  - _position: {x: -6, y: 0, z: -1}
+    _cellType: 0
+    _tile: {fileID: 11400000, guid: 88c65eca82c0f46399dd5ffaf0613790, type: 2}
+    _boxSize: {x: 1, y: 1, z: 1}
+    _holeDepth: 5
+  - _position: {x: -6, y: 0, z: -2}
+    _cellType: 0
+    _tile: {fileID: 11400000, guid: 88c65eca82c0f46399dd5ffaf0613790, type: 2}
+    _boxSize: {x: 1, y: 1, z: 1}
+    _holeDepth: 5
+  - _position: {x: -5, y: 0, z: -2}
+    _cellType: 0
+    _tile: {fileID: 11400000, guid: 88c65eca82c0f46399dd5ffaf0613790, type: 2}
+    _boxSize: {x: 1, y: 1, z: 1}
+    _holeDepth: 5
+  - _position: {x: -5, y: 0, z: -1}
+    _cellType: 0
+    _tile: {fileID: 11400000, guid: 88c65eca82c0f46399dd5ffaf0613790, type: 2}
+    _boxSize: {x: 1, y: 1, z: 1}
+    _holeDepth: 5
+  - _position: {x: -5, y: 0, z: 0}
+    _cellType: 0
+    _tile: {fileID: 11400000, guid: 88c65eca82c0f46399dd5ffaf0613790, type: 2}
+    _boxSize: {x: 1, y: 1, z: 1}
+    _holeDepth: 5
+  - _position: {x: -4, y: 0, z: 0}
+    _cellType: 0
+    _tile: {fileID: 11400000, guid: 88c65eca82c0f46399dd5ffaf0613790, type: 2}
+    _boxSize: {x: 1, y: 1, z: 1}
+    _holeDepth: 5
+  - _position: {x: -4, y: 0, z: 1}
+    _cellType: 0
+    _tile: {fileID: 11400000, guid: 88c65eca82c0f46399dd5ffaf0613790, type: 2}
+    _boxSize: {x: 1, y: 1, z: 1}
+    _holeDepth: 5
   - _position: {x: -4, y: 0, z: 2}
     _cellType: 0
     _tile: {fileID: 11400000, guid: 88c65eca82c0f46399dd5ffaf0613790, type: 2}
@@ -566,7 +301,62 @@ MonoBehaviour:
     _tile: {fileID: 11400000, guid: 88c65eca82c0f46399dd5ffaf0613790, type: 2}
     _boxSize: {x: 1, y: 1, z: 1}
     _holeDepth: 5
-  - _position: {x: -4, y: 0, z: 4}
+  - _position: {x: -5, y: 0, z: 3}
+    _cellType: 0
+    _tile: {fileID: 11400000, guid: 88c65eca82c0f46399dd5ffaf0613790, type: 2}
+    _boxSize: {x: 1, y: 1, z: 1}
+    _holeDepth: 5
+  - _position: {x: -4, y: 0, z: -3}
+    _cellType: 0
+    _tile: {fileID: 11400000, guid: 88c65eca82c0f46399dd5ffaf0613790, type: 2}
+    _boxSize: {x: 1, y: 1, z: 1}
+    _holeDepth: 5
+  - _position: {x: -5, y: 0, z: -3}
+    _cellType: 0
+    _tile: {fileID: 11400000, guid: 88c65eca82c0f46399dd5ffaf0613790, type: 2}
+    _boxSize: {x: 1, y: 1, z: 1}
+    _holeDepth: 5
+  - _position: {x: -7, y: 0, z: -1}
+    _cellType: 0
+    _tile: {fileID: 11400000, guid: 88c65eca82c0f46399dd5ffaf0613790, type: 2}
+    _boxSize: {x: 1, y: 1, z: 1}
+    _holeDepth: 5
+  - _position: {x: -7, y: 0, z: -2}
+    _cellType: 0
+    _tile: {fileID: 11400000, guid: 88c65eca82c0f46399dd5ffaf0613790, type: 2}
+    _boxSize: {x: 1, y: 1, z: 1}
+    _holeDepth: 5
+  - _position: {x: -6, y: 0, z: -3}
+    _cellType: 0
+    _tile: {fileID: 11400000, guid: 88c65eca82c0f46399dd5ffaf0613790, type: 2}
+    _boxSize: {x: 1, y: 1, z: 1}
+    _holeDepth: 5
+  - _position: {x: -7, y: 0, z: 0}
+    _cellType: 0
+    _tile: {fileID: 11400000, guid: 88c65eca82c0f46399dd5ffaf0613790, type: 2}
+    _boxSize: {x: 1, y: 1, z: 1}
+    _holeDepth: 5
+  - _position: {x: -7, y: 0, z: 1}
+    _cellType: 0
+    _tile: {fileID: 11400000, guid: 88c65eca82c0f46399dd5ffaf0613790, type: 2}
+    _boxSize: {x: 1, y: 1, z: 1}
+    _holeDepth: 5
+  - _position: {x: -7, y: 0, z: 2}
+    _cellType: 0
+    _tile: {fileID: 11400000, guid: 88c65eca82c0f46399dd5ffaf0613790, type: 2}
+    _boxSize: {x: 1, y: 1, z: 1}
+    _holeDepth: 5
+  - _position: {x: -7, y: 0, z: 3}
+    _cellType: 0
+    _tile: {fileID: 11400000, guid: 88c65eca82c0f46399dd5ffaf0613790, type: 2}
+    _boxSize: {x: 1, y: 1, z: 1}
+    _holeDepth: 5
+  - _position: {x: -7, y: 0, z: 4}
+    _cellType: 0
+    _tile: {fileID: 11400000, guid: 88c65eca82c0f46399dd5ffaf0613790, type: 2}
+    _boxSize: {x: 1, y: 1, z: 1}
+    _holeDepth: 5
+  - _position: {x: -7, y: 0, z: 5}
     _cellType: 0
     _tile: {fileID: 11400000, guid: 88c65eca82c0f46399dd5ffaf0613790, type: 2}
     _boxSize: {x: 1, y: 1, z: 1}
@@ -581,7 +371,17 @@ MonoBehaviour:
     _tile: {fileID: 11400000, guid: 88c65eca82c0f46399dd5ffaf0613790, type: 2}
     _boxSize: {x: 1, y: 1, z: 1}
     _holeDepth: 5
+  - _position: {x: -2, y: 0, z: 5}
+    _cellType: 0
+    _tile: {fileID: 11400000, guid: 88c65eca82c0f46399dd5ffaf0613790, type: 2}
+    _boxSize: {x: 1, y: 1, z: 1}
+    _holeDepth: 5
   - _position: {x: -3, y: 0, z: 6}
+    _cellType: 0
+    _tile: {fileID: 11400000, guid: 88c65eca82c0f46399dd5ffaf0613790, type: 2}
+    _boxSize: {x: 1, y: 1, z: 1}
+    _holeDepth: 5
+  - _position: {x: -2, y: 0, z: 6}
     _cellType: 0
     _tile: {fileID: 11400000, guid: 88c65eca82c0f46399dd5ffaf0613790, type: 2}
     _boxSize: {x: 1, y: 1, z: 1}
@@ -596,108 +396,93 @@ MonoBehaviour:
     _tile: {fileID: 11400000, guid: 88c65eca82c0f46399dd5ffaf0613790, type: 2}
     _boxSize: {x: 1, y: 1, z: 1}
     _holeDepth: 5
+  - _position: {x: -5, y: 0, z: 7}
+    _cellType: 0
+    _tile: {fileID: 11400000, guid: 88c65eca82c0f46399dd5ffaf0613790, type: 2}
+    _boxSize: {x: 1, y: 1, z: 1}
+    _holeDepth: 5
+  - _position: {x: -6, y: 0, z: 7}
+    _cellType: 0
+    _tile: {fileID: 11400000, guid: 88c65eca82c0f46399dd5ffaf0613790, type: 2}
+    _boxSize: {x: 1, y: 1, z: 1}
+    _holeDepth: 5
+  - _position: {x: -7, y: 0, z: 6}
+    _cellType: 0
+    _tile: {fileID: 11400000, guid: 88c65eca82c0f46399dd5ffaf0613790, type: 2}
+    _boxSize: {x: 1, y: 1, z: 1}
+    _holeDepth: 5
   - _position: {x: -4, y: 0, z: 6}
     _cellType: 0
     _tile: {fileID: 11400000, guid: 88c65eca82c0f46399dd5ffaf0613790, type: 2}
     _boxSize: {x: 1, y: 1, z: 1}
     _holeDepth: 5
-  - _position: {x: -4, y: 0, z: 8}
+  - _position: {x: -3, y: -1, z: -1}
     _cellType: 0
     _tile: {fileID: 11400000, guid: 88c65eca82c0f46399dd5ffaf0613790, type: 2}
     _boxSize: {x: 1, y: 1, z: 1}
     _holeDepth: 5
-  - _position: {x: -4, y: 1, z: 8}
+  - _position: {x: -3, y: -1, z: -2}
     _cellType: 0
     _tile: {fileID: 11400000, guid: 88c65eca82c0f46399dd5ffaf0613790, type: 2}
     _boxSize: {x: 1, y: 1, z: 1}
     _holeDepth: 5
-  - _position: {x: -4, y: 1, z: 7}
+  - _position: {x: -4, y: -1, z: -1}
     _cellType: 0
     _tile: {fileID: 11400000, guid: 88c65eca82c0f46399dd5ffaf0613790, type: 2}
     _boxSize: {x: 1, y: 1, z: 1}
     _holeDepth: 5
-  - _position: {x: -4, y: 1, z: 6}
+  - _position: {x: -4, y: -1, z: -2}
     _cellType: 0
     _tile: {fileID: 11400000, guid: 88c65eca82c0f46399dd5ffaf0613790, type: 2}
     _boxSize: {x: 1, y: 1, z: 1}
     _holeDepth: 5
-  - _position: {x: -4, y: 1, z: 5}
+  - _position: {x: -5, y: -1, z: 3}
     _cellType: 0
     _tile: {fileID: 11400000, guid: 88c65eca82c0f46399dd5ffaf0613790, type: 2}
     _boxSize: {x: 1, y: 1, z: 1}
     _holeDepth: 5
-  - _position: {x: -4, y: 1, z: 4}
+  - _position: {x: -5, y: -1, z: 2}
     _cellType: 0
     _tile: {fileID: 11400000, guid: 88c65eca82c0f46399dd5ffaf0613790, type: 2}
     _boxSize: {x: 1, y: 1, z: 1}
     _holeDepth: 5
-  - _position: {x: -4, y: 1, z: 3}
+  - _position: {x: -6, y: -1, z: 2}
     _cellType: 0
     _tile: {fileID: 11400000, guid: 88c65eca82c0f46399dd5ffaf0613790, type: 2}
     _boxSize: {x: 1, y: 1, z: 1}
     _holeDepth: 5
-  - _position: {x: -4, y: 1, z: 2}
+  - _position: {x: -5, y: -1, z: 1}
     _cellType: 0
     _tile: {fileID: 11400000, guid: 88c65eca82c0f46399dd5ffaf0613790, type: 2}
     _boxSize: {x: 1, y: 1, z: 1}
     _holeDepth: 5
-  - _position: {x: 0, y: 0, z: 6}
+  - _position: {x: -6, y: -1, z: 1}
     _cellType: 0
     _tile: {fileID: 11400000, guid: 88c65eca82c0f46399dd5ffaf0613790, type: 2}
     _boxSize: {x: 1, y: 1, z: 1}
     _holeDepth: 5
-  - _position: {x: 1, y: 0, z: 6}
+  - _position: {x: -5, y: -1, z: 6}
     _cellType: 0
     _tile: {fileID: 11400000, guid: 88c65eca82c0f46399dd5ffaf0613790, type: 2}
     _boxSize: {x: 1, y: 1, z: 1}
     _holeDepth: 5
-  - _position: {x: 2, y: 0, z: 6}
+  - _position: {x: -5, y: -1, z: 5}
     _cellType: 0
     _tile: {fileID: 11400000, guid: 88c65eca82c0f46399dd5ffaf0613790, type: 2}
     _boxSize: {x: 1, y: 1, z: 1}
     _holeDepth: 5
-  - _position: {x: 2, y: 0, z: 5}
+  - _position: {x: -6, y: -1, z: 5}
     _cellType: 0
     _tile: {fileID: 11400000, guid: 88c65eca82c0f46399dd5ffaf0613790, type: 2}
     _boxSize: {x: 1, y: 1, z: 1}
     _holeDepth: 5
-  - _position: {x: 0, y: -1, z: 4}
+  - _position: {x: -6, y: -1, z: 6}
     _cellType: 0
     _tile: {fileID: 11400000, guid: 88c65eca82c0f46399dd5ffaf0613790, type: 2}
     _boxSize: {x: 1, y: 1, z: 1}
     _holeDepth: 5
-  - _position: {x: 1, y: -1, z: 4}
+  - _position: {x: -4, y: -1, z: 0}
     _cellType: 0
     _tile: {fileID: 11400000, guid: 88c65eca82c0f46399dd5ffaf0613790, type: 2}
-    _boxSize: {x: 1, y: 1, z: 1}
-    _holeDepth: 5
-  - _position: {x: 1, y: -1, z: 5}
-    _cellType: 0
-    _tile: {fileID: 11400000, guid: 88c65eca82c0f46399dd5ffaf0613790, type: 2}
-    _boxSize: {x: 1, y: 1, z: 1}
-    _holeDepth: 5
-  - _position: {x: 0, y: -1, z: 5}
-    _cellType: 0
-    _tile: {fileID: 11400000, guid: 88c65eca82c0f46399dd5ffaf0613790, type: 2}
-    _boxSize: {x: 1, y: 1, z: 1}
-    _holeDepth: 5
-  - _position: {x: 1, y: 0, z: 4}
-    _cellType: 1
-    _tile: {fileID: 0}
-    _boxSize: {x: 1, y: 1, z: 1}
-    _holeDepth: 5
-  - _position: {x: 1, y: 0, z: 5}
-    _cellType: 1
-    _tile: {fileID: 0}
-    _boxSize: {x: 1, y: 1, z: 1}
-    _holeDepth: 5
-  - _position: {x: 0, y: 0, z: 5}
-    _cellType: 1
-    _tile: {fileID: 0}
-    _boxSize: {x: 1, y: 1, z: 1}
-    _holeDepth: 5
-  - _position: {x: 0, y: 0, z: 4}
-    _cellType: 1
-    _tile: {fileID: 0}
     _boxSize: {x: 1, y: 1, z: 1}
     _holeDepth: 5

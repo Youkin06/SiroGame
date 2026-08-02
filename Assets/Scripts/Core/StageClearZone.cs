@@ -62,6 +62,7 @@ public sealed class StageClearZone : MonoBehaviour
         _hasTriggered = true;
         if (nextBuildIndex >= SceneManager.sceneCountInBuildSettings)
         {
+            GameClearTimeTracker.CompleteRun();
             loadingScreen.LoadFinalResultScene(
                 TitleSceneName,
                 worldModeManager.KuroElapsedTime
