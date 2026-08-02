@@ -7,6 +7,7 @@ using UnityEngine;
 public sealed class DoorButton : MonoBehaviour
 {
     private static readonly int OpenAnimationHash = Animator.StringToHash("open");
+    private static readonly int CloseAnimationHash = Animator.StringToHash("close");
     private const string PressPlateName = "button";
     private const string DoorName = "door";
     private const int OverlapCapacity = 32;
@@ -50,7 +51,7 @@ public sealed class DoorButton : MonoBehaviour
         }
 
         _releasedLocalY = _pressPlate.localPosition.y;
-        _doorAnimator.SetBool(OpenAnimationHash, false);
+        ApplyDoorAnimationParameters(false);
     }
 
     private void FixedUpdate()
@@ -59,7 +60,7 @@ public sealed class DoorButton : MonoBehaviour
         if (shouldBePressed != IsPressed)
         {
             IsPressed = shouldBePressed;
-            _doorAnimator.SetBool(OpenAnimationHash, IsPressed);
+            ApplyDoorAnimationParameters(IsPressed);
         }
 
         float targetY = IsPressed ? 0f : _releasedLocalY;
@@ -77,8 +78,14 @@ public sealed class DoorButton : MonoBehaviour
     {
         if (_doorAnimator != null)
         {
-            _doorAnimator.SetBool(OpenAnimationHash, false);
+            ApplyDoorAnimationParameters(false);
         }
+    }
+
+    private void ApplyDoorAnimationParameters(bool isPressed)
+    {
+        _doorAnimator.SetBool(OpenAnimationHash, isPressed);
+        _doorAnimator.SetBool(CloseAnimationHash, !isPressed);
     }
 
     private void ResolvePressPlate()
