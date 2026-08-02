@@ -18,6 +18,7 @@ public sealed class TitleMenuController : MonoBehaviour
     private RectTransform _selectRectTransform;
     private TMP_Text _startText;
     private TMP_Text _settingsText;
+    private AudioSource _decisionAudioSource;
     private GameObject _selectObject;
     private GameObject _startObject;
     private GameObject _settingsObject;
@@ -33,6 +34,7 @@ public sealed class TitleMenuController : MonoBehaviour
         _selectObject = GameObject.Find("select");
         _startObject = GameObject.Find("Start");
         _settingsObject = GameObject.Find("setting");
+        _decisionAudioSource = GetComponent<AudioSource>();
 
         if (_selectObject != null)
         {
@@ -57,6 +59,25 @@ public sealed class TitleMenuController : MonoBehaviour
             );
             enabled = false;
             return;
+        }
+
+        if (_decisionAudioSource == null || _decisionAudioSource.clip == null)
+        {
+            Debug.LogError(
+                "TitleMenuSystemのAudioSourceにselect_001が設定されていません。",
+                this
+            );
+        }
+        else
+        {
+            if (_decisionAudioSource.clip.loadState == AudioDataLoadState.Unloaded)
+            {
+                _decisionAudioSource.clip.LoadAudioData();
+            }
+
+            _decisionAudioSource.playOnAwake = false;
+            _decisionAudioSource.loop = false;
+            _decisionAudioSource.spatialBlend = 0f;
         }
 
         SetSelection(StartIndex);
@@ -147,12 +168,14 @@ public sealed class TitleMenuController : MonoBehaviour
 
             if (!TileLoadingScreen.Instance.IsLoading)
             {
+                PlayDecisionSound();
                 TileLoadingScreen.Instance.LoadNewGameScene("SampleScene");
             }
 
             return;
         }
 
+        PlayDecisionSound();
         SettingsSelected?.Invoke();
         Debug.Log("設定が選択されました。設定画面は未接続です。", this);
     }
@@ -167,6 +190,14 @@ public sealed class TitleMenuController : MonoBehaviour
         if (visible)
         {
             SetSelection(StartIndex);
+        }
+    }
+
+    private void PlayDecisionSound()
+    {
+        if (_decisionAudioSource != null && _decisionAudioSource.clip != null)
+        {
+            _decisionAudioSource.PlayOneShot(_decisionAudioSource.clip);
         }
     }
 }

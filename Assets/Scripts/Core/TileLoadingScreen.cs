@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
@@ -64,6 +65,44 @@ public sealed class TileLoadingScreen : MonoBehaviour
         {
             Instance = null;
         }
+    }
+
+    private void Update()
+    {
+        if (_loadCoroutine != null || WorldModeManager.Instance == null)
+        {
+            return;
+        }
+
+        Keyboard keyboard = Keyboard.current;
+        if (keyboard != null && keyboard.rKey.wasPressedThisFrame)
+        {
+            RetryCurrentStage();
+        }
+    }
+
+    /// <summary>
+    /// クリア済みステージ分のクロ累計は維持し、現在のステージだけを再読込する。
+    /// </summary>
+    public void RetryCurrentStage()
+    {
+        if (_loadCoroutine != null)
+        {
+            return;
+        }
+
+        Scene activeScene = SceneManager.GetActiveScene();
+        if (activeScene.buildIndex < 0)
+        {
+            Debug.LogError(
+                $"シーン '{activeScene.name}' がBuild Settingsにありません。" +
+                "リトライするにはシーンを登録してください。",
+                this
+            );
+            return;
+        }
+
+        LoadScene(activeScene.buildIndex);
     }
 
     /// <summary>Build Settingsに登録済みのシーン名を指定して遷移する。</summary>

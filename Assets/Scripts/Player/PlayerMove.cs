@@ -19,9 +19,11 @@ public class PlayerMove : MonoBehaviour
     [SerializeField] private float _jumpForce = 5;
     [SerializeField] private float _rotationSpeed = 12;
     [SerializeField, Min(0f)] private float _restartDelayAfterDeath = 0.5f;
+    [SerializeField, Min(0.05f)] private float _footstepInterval = 0.32f;
     
     private Rigidbody _rigidbody;
     private Animator _animator;
+    private AudioSource _footstepAudioSource;
     private PhysicsMaterial _frictionlessMaterial;
     private GameInputActions _gameInputActions;
     private Vector2 _moveInputValue;
@@ -30,6 +32,8 @@ public class PlayerMove : MonoBehaviour
     private bool _isGrounded;
     private bool _jumpConsumed;
     private Coroutine _restartCoroutine;
+    private float _nextFootstepTime;
+    private bool _wasWalkingForFootsteps;
 
     public bool IsDead { get; private set; }
     public event Action<PlayerMove> Died;
@@ -37,6 +41,7 @@ public class PlayerMove : MonoBehaviour
     private void Awake(){
         _rigidbody = GetComponent<Rigidbody>();
         _animator = GetComponentInChildren<Animator>();
+        _footstepAudioSource = GetComponent<AudioSource>();
         _worldModeManager = FindFirstObjectByType<WorldModeManager>();
 
         if (_animator == null)
@@ -46,6 +51,8 @@ public class PlayerMove : MonoBehaviour
                 this
             );
         }
+
+        ConfigureFootstepAudio();
 
         ApplyFrictionlessMaterial();
         _rigidbody.interpolation = RigidbodyInterpolation.Interpolate;
@@ -74,6 +81,7 @@ public class PlayerMove : MonoBehaviour
     private void OnDisable()
     {
         _gameInputActions?.Player.Disable();
+        StopFootstepAudio();
     }
 
     private void OnDestroy()
@@ -105,6 +113,7 @@ public class PlayerMove : MonoBehaviour
         }
 
         _jumpConsumed = true;
+        StopFootstepAudio();
 
         if (_rigidbody.linearVelocity.y < 0f)
         {
@@ -226,6 +235,7 @@ public class PlayerMove : MonoBehaviour
         IsDead = true;
         _moveInputValue = Vector2.zero;
         _jumpConsumed = true;
+        StopFootstepAudio();
 
         if (_rigidbody != null)
         {
@@ -342,7 +352,78 @@ public class PlayerMove : MonoBehaviour
             moveDirection.z * _moveForce
         );
 
+        bool isWalking = _isGrounded &&
+                         moveDirection.sqrMagnitude > 0.001f;
+        UpdateFootstepAudio(isWalking);
         UpdateAnimationState(moveDirection);
+    }
+
+    private void ConfigureFootstepAudio()
+    {
+        if (_footstepAudioSource == null)
+        {
+            Debug.LogError(
+                "Playerに足音用AudioSourceがありません。" +
+                "Player直下へAudioSourceを追加してください。",
+                this
+            );
+            return;
+        }
+
+        if (_footstepAudioSource.clip == null)
+        {
+            Debug.LogError(
+                "PlayerのAudioSourceにfootstep05が設定されていません。",
+                this
+            );
+        }
+        else if (_footstepAudioSource.clip.loadState == AudioDataLoadState.Unloaded)
+        {
+            _footstepAudioSource.clip.LoadAudioData();
+        }
+
+        _footstepAudioSource.playOnAwake = false;
+        _footstepAudioSource.loop = false;
+        _footstepAudioSource.spatialBlend = 1f;
+    }
+
+    private void UpdateFootstepAudio(bool isWalking)
+    {
+        if (_footstepAudioSource == null ||
+            _footstepAudioSource.clip == null)
+        {
+            return;
+        }
+
+        if (!isWalking)
+        {
+            StopFootstepAudio();
+            return;
+        }
+
+        if (!_wasWalkingForFootsteps)
+        {
+            _wasWalkingForFootsteps = true;
+            _nextFootstepTime = Time.time;
+        }
+
+        if (Time.time < _nextFootstepTime)
+        {
+            return;
+        }
+
+        _footstepAudioSource.PlayOneShot(_footstepAudioSource.clip);
+        _nextFootstepTime = Time.time + Mathf.Max(0.05f, _footstepInterval);
+    }
+
+    private void StopFootstepAudio()
+    {
+        _wasWalkingForFootsteps = false;
+        _nextFootstepTime = 0f;
+        if (_footstepAudioSource != null && _footstepAudioSource.isPlaying)
+        {
+            _footstepAudioSource.Stop();
+        }
     }
 
     private void UpdateAnimationState(Vector3 moveDirection)

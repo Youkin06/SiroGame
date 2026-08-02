@@ -15,6 +15,7 @@ public sealed class DoorButton : MonoBehaviour
 
     [SerializeField] private float _pressSpeed = 2f;
     [SerializeField] private float _releaseSpeed = 2f;
+    [SerializeField, Min(0f)] private float _pressDepth = 0.2f;
     [SerializeField] private float _detectionHeight = 0.4f;
     [SerializeField] private float _horizontalInset = 0.05f;
 
@@ -25,6 +26,7 @@ public sealed class DoorButton : MonoBehaviour
     private BoxCollider _pressPlateCollider;
     private Animator _doorAnimator;
     private float _releasedLocalY;
+    private float _pressedLocalY;
 
     /// <summary>
     /// 指定されたColliderが、このボタンの押し板かどうかを返す。
@@ -52,6 +54,7 @@ public sealed class DoorButton : MonoBehaviour
         }
 
         _releasedLocalY = _pressPlate.localPosition.y;
+        _pressedLocalY = _releasedLocalY - Mathf.Max(0f, _pressDepth);
         ApplyDoorAnimationParameters(false);
     }
 
@@ -64,7 +67,7 @@ public sealed class DoorButton : MonoBehaviour
             ApplyDoorAnimationParameters(IsPressed);
         }
 
-        float targetY = IsPressed ? 0f : _releasedLocalY;
+        float targetY = IsPressed ? _pressedLocalY : _releasedLocalY;
         float speed = IsPressed ? _pressSpeed : _releaseSpeed;
         Vector3 localPosition = _pressPlate.localPosition;
         localPosition.y = Mathf.MoveTowards(

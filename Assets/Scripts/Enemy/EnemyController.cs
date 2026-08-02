@@ -27,6 +27,7 @@ public class EnemyController : MonoBehaviour
     [SerializeField] private float _stoppingDistance = 0.1f;
     [SerializeField] private float _destinationRefreshInterval = 0.1f;
     [SerializeField] private float _destinationMoveThreshold = 0.1f;
+    [SerializeField, Min(0.05f)] private float _footstepInterval = 0.36f;
 
     [Header("Falling")]
     [FormerlySerializedAs("_fallForwardSpeed")]
@@ -44,6 +45,7 @@ public class EnemyController : MonoBehaviour
     private NavMeshAgent _navMeshAgent;
     private Rigidbody _rigidbody;
     private Animator _animator;
+    private AudioSource _footstepAudioSource;
     private Vector3 _visualInitialScale;
     private Collider[] _bodyColliders;
     private Vector3 _holeCenter;
@@ -55,6 +57,8 @@ public class EnemyController : MonoBehaviour
     private Vector3 _deathFacingDirection;
     private bool _hasReachedDeathZone;
     private bool _hasLandedBelowHole;
+    private float _nextFootstepTime;
+    private bool _wasWalkingForFootsteps;
 
     private void Awake()
     {
@@ -68,6 +72,7 @@ public class EnemyController : MonoBehaviour
         _navMeshAgent = GetComponentInChildren<NavMeshAgent>();
         _rigidbody = GetComponent<Rigidbody>();
         _animator = GetComponentInChildren<Animator>();
+        _footstepAudioSource = GetComponent<AudioSource>();
         _visualInitialScale = _animator != null
             ? _animator.transform.localScale
             : Vector3.one;
@@ -84,6 +89,7 @@ public class EnemyController : MonoBehaviour
 
         ConfigureNavigation();
         ConfigureAnimation();
+        ConfigureFootstepAudio();
 
         if (!_navMeshAgent.enabled || !_navMeshAgent.isOnNavMesh)
         {
@@ -114,6 +120,8 @@ public class EnemyController : MonoBehaviour
 
     private void OnDisable()
     {
+        StopFootstepAudio();
+
         if (_worldModeManager != null)
         {
             _worldModeManager.ModeChanged -= OnModeChanged;
@@ -237,9 +245,14 @@ public class EnemyController : MonoBehaviour
             return;
         }
 
+        DisableNavigation();
         _rigidbody.linearVelocity = Vector3.zero;
         _rigidbody.angularVelocity = Vector3.zero;
-        _rigidbody.isKinematic = true;
+        _rigidbody.isKinematic = false;
+        _rigidbody.useGravity = true;
+        _rigidbody.collisionDetectionMode = CollisionDetectionMode.ContinuousDynamic;
+        _rigidbody.constraints |= RigidbodyConstraints.FreezeRotation;
+        _rigidbody.WakeUp();
 
         CurrentState = EnemyState.Dead;
         _animator.transform.localScale = _visualInitialScale * _deathVisualScale;
@@ -280,6 +293,75 @@ public class EnemyController : MonoBehaviour
         _animator.SetBool(WalkAnimationHash, isWalking && !isDead);
         _animator.SetBool(FallingAnimationHash, isFalling && !isDead);
         _animator.SetBool(DeadAnimationHash, isDead);
+        UpdateFootstepAudio(isWalking && !isFalling && !isDead);
+    }
+
+    private void ConfigureFootstepAudio()
+    {
+        if (_footstepAudioSource == null)
+        {
+            Debug.LogError(
+                "Enemyに足音用AudioSourceがありません。" +
+                "Enemy直下へAudioSourceを追加してください。",
+                this
+            );
+            return;
+        }
+
+        if (_footstepAudioSource.clip == null)
+        {
+            Debug.LogError(
+                "EnemyのAudioSourceにfootstep06が設定されていません。",
+                this
+            );
+        }
+        else if (_footstepAudioSource.clip.loadState == AudioDataLoadState.Unloaded)
+        {
+            _footstepAudioSource.clip.LoadAudioData();
+        }
+
+        _footstepAudioSource.playOnAwake = false;
+        _footstepAudioSource.loop = false;
+        _footstepAudioSource.spatialBlend = 1f;
+    }
+
+    private void UpdateFootstepAudio(bool isWalking)
+    {
+        if (_footstepAudioSource == null ||
+            _footstepAudioSource.clip == null)
+        {
+            return;
+        }
+
+        if (!isWalking)
+        {
+            StopFootstepAudio();
+            return;
+        }
+
+        if (!_wasWalkingForFootsteps)
+        {
+            _wasWalkingForFootsteps = true;
+            _nextFootstepTime = Time.time;
+        }
+
+        if (Time.time < _nextFootstepTime)
+        {
+            return;
+        }
+
+        _footstepAudioSource.PlayOneShot(_footstepAudioSource.clip);
+        _nextFootstepTime = Time.time + Mathf.Max(0.05f, _footstepInterval);
+    }
+
+    private void StopFootstepAudio()
+    {
+        _wasWalkingForFootsteps = false;
+        _nextFootstepTime = 0f;
+        if (_footstepAudioSource != null && _footstepAudioSource.isPlaying)
+        {
+            _footstepAudioSource.Stop();
+        }
     }
 
     private void UpdateNavigationMovement()
