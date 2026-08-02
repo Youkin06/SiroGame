@@ -38,18 +38,6 @@ public sealed class WorldModeVisualTransition : MonoBehaviour
     [SerializeField] private Color _kuroBackgroundColor = Color.black;
 
     [Header("Shiro Player Color Levels")]
-    [Tooltip("クロ累計時間がLevel 1未満の時はLevel 1 Colorを使用します。")]
-    [InspectorName("Level 1 終了時間（秒）")]
-    [SerializeField, Min(0f)] private float _level1Time = 10f;
-    [Tooltip("クロ累計時間がLevel 2未満の時はLevel 2 Colorを使用します。")]
-    [InspectorName("Level 2 終了時間（秒）")]
-    [SerializeField, Min(0f)] private float _level2Time = 20f;
-    [Tooltip("クロ累計時間がLevel 3未満の時はLevel 3 Colorを使用します。")]
-    [InspectorName("Level 3 終了時間（秒）")]
-    [SerializeField, Min(0f)] private float _level3Time = 40f;
-    [Tooltip("クロ累計時間がLevel 4未満の時はLevel 4 Colorを使用します。以降はLevel 5です。")]
-    [InspectorName("Level 4 終了時間（秒）")]
-    [SerializeField, Min(0f)] private float _level4Time = 60f;
     [InspectorName("Level 1 Color（真っ白）")]
     [SerializeField] private Color _level1Color = Color.white;
     [InspectorName("Level 2 Color（薄い灰色）")]
@@ -369,18 +357,7 @@ public sealed class WorldModeVisualTransition : MonoBehaviour
 
     public int GetShiroColorLevel(float kuroElapsedTime)
     {
-        float elapsedTime = Mathf.Max(0f, kuroElapsedTime);
-        if (elapsedTime < _level2Time)
-        {
-            return elapsedTime < _level1Time ? 1 : 2;
-        }
-
-        if (elapsedTime < _level3Time)
-        {
-            return 3;
-        }
-
-        return elapsedTime < _level4Time ? 4 : 5;
+        return KuroProgressSettings.GetSharedColorLevel(kuroElapsedTime);
     }
 
     public Color GetShiroBackgroundColor(float kuroElapsedTime)
@@ -406,15 +383,6 @@ public sealed class WorldModeVisualTransition : MonoBehaviour
         CurrentShiroColorLevel = GetShiroColorLevel(elapsedTime);
         CurrentShiroPlayerColor = GetShiroPlayerColor(elapsedTime);
         CurrentShiroBackgroundColor = GetShiroBackgroundColor(elapsedTime);
-    }
-
-    private void OnValidate()
-    {
-        // Inspectorで逆順の値を入力しても、各時間帯が破綻しないようにする。
-        _level1Time = Mathf.Max(0f, _level1Time);
-        _level2Time = Mathf.Max(_level1Time, _level2Time);
-        _level3Time = Mathf.Max(_level2Time, _level3Time);
-        _level4Time = Mathf.Max(_level3Time, _level4Time);
     }
 
     private bool HasRequiredReferences()

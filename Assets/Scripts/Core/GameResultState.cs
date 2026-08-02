@@ -36,9 +36,6 @@ public readonly struct GameResultSnapshot
 /// </summary>
 public static class GameResultState
 {
-    private const float ClearUpperBound = 0.2f;
-    private const float BlackLowerBound = 0.8f;
-
     private static bool _hasPendingResult;
     private static GameResultSnapshot _pendingResult;
 
@@ -82,12 +79,20 @@ public static class GameResultState
     public static GameResultRank EvaluateRank(float gaugeRatio)
     {
         float ratio = Mathf.Clamp01(gaugeRatio);
-        if (ratio < ClearUpperBound)
+        KuroProgressSettings settings = KuroProgressSettings.Current;
+        float clearUpperBound = settings != null
+            ? settings.ClearUpperRatio
+            : KuroProgressSettings.DefaultClearUpperRatio;
+        float blackLowerBound = settings != null
+            ? settings.BlackLowerRatio
+            : KuroProgressSettings.DefaultBlackLowerRatio;
+
+        if (ratio < clearUpperBound)
         {
             return GameResultRank.Clear;
         }
 
-        return ratio < BlackLowerBound
+        return ratio < blackLowerBound
             ? GameResultRank.GrayNotCleared
             : GameResultRank.BlackNotCleared;
     }

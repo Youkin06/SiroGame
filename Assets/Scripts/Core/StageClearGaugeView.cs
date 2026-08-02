@@ -13,13 +13,12 @@ public sealed class StageClearGaugeView : MonoBehaviour
 
     [Header("Gauge Animation")]
     [SerializeField, Min(0f)] private float _displayDuration = 3f;
-    [SerializeField, Min(0.01f)] private float _maximumKuroTime = 60f;
 
     private RectTransform _fillRectTransform;
     private Transform _frameTransform;
     private float _fullWidth;
 
-    public float MaximumKuroTime => Mathf.Max(0.01f, _maximumKuroTime);
+    public float MaximumKuroTime => KuroProgressSettings.SharedMaximumKuroTime;
 
     private void Awake()
     {

@@ -1,0 +1,20 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8dcd1f6f7adf4af39ea55d9c0fc52e01, type: 3}
+  m_Name: KuroProgressSettings
+  m_EditorClassIdentifier: Assembly-CSharp::KuroProgressSettings
+  _level1EndTime: 5
+  _level2EndTime: 10
+  _level3EndTime: 15
+  _maximumKuroTime: 20
+  _clearUpperRatio: 0.2
+  _blackLowerRatio: 0.8

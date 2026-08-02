@@ -352,4 +352,3 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::StageClearGaugeView
   _displayDuration: 3
-  _maximumKuroTime: 60
