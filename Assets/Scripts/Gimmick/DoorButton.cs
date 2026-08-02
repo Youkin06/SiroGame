@@ -2,15 +2,12 @@ using UnityEngine;
 
 /// <summary>
 /// Player、Enemy、または物理的に動く箱が押し板の上にいる間だけ、
-/// ボタンを沈めてDoorを開く。
+/// ボタンを沈め、現在の押下状態を公開する。
 /// 参照は既存のシーン階層からAwakeで取得し、コンポーネントは自動生成しない。
 /// </summary>
 public sealed class DoorButton : MonoBehaviour
 {
-    private static readonly int OpenAnimationHash = Animator.StringToHash("open");
-    private static readonly int CloseAnimationHash = Animator.StringToHash("close");
     private const string PressPlateName = "button";
-    private const string DoorName = "door";
     private const int OverlapCapacity = 32;
 
     [SerializeField] private float _pressSpeed = 2f;
@@ -24,7 +21,6 @@ public sealed class DoorButton : MonoBehaviour
     private readonly Collider[] _overlapResults = new Collider[OverlapCapacity];
     private Transform _pressPlate;
     private BoxCollider _pressPlateCollider;
-    private Animator _doorAnimator;
     private float _releasedLocalY;
     private float _pressedLocalY;
 
@@ -40,13 +36,12 @@ public sealed class DoorButton : MonoBehaviour
     private void Awake()
     {
         ResolvePressPlate();
-        ResolveDoorAnimator();
 
-        if (_pressPlate == null || _pressPlateCollider == null || _doorAnimator == null)
+        if (_pressPlate == null || _pressPlateCollider == null)
         {
             Debug.LogError(
                 "DoorButtonの必要な参照が見つかりません。" +
-                "子のbuttonとBoxCollider、シーン内のdoor Animatorを確認してください。",
+                "子のbuttonとBoxColliderを確認してください。",
                 this
             );
             enabled = false;
@@ -55,7 +50,6 @@ public sealed class DoorButton : MonoBehaviour
 
         _releasedLocalY = _pressPlate.localPosition.y;
         _pressedLocalY = _releasedLocalY - Mathf.Max(0f, _pressDepth);
-        ApplyDoorAnimationParameters(false);
     }
 
     private void FixedUpdate()
@@ -64,7 +58,6 @@ public sealed class DoorButton : MonoBehaviour
         if (shouldBePressed != IsPressed)
         {
             IsPressed = shouldBePressed;
-            ApplyDoorAnimationParameters(IsPressed);
         }
 
         float targetY = IsPressed ? _pressedLocalY : _releasedLocalY;
@@ -76,20 +69,6 @@ public sealed class DoorButton : MonoBehaviour
             Mathf.Max(0f, speed) * Time.fixedDeltaTime
         );
         _pressPlate.localPosition = localPosition;
-    }
-
-    private void OnDisable()
-    {
-        if (_doorAnimator != null)
-        {
-            ApplyDoorAnimationParameters(false);
-        }
-    }
-
-    private void ApplyDoorAnimationParameters(bool isPressed)
-    {
-        _doorAnimator.SetBool(OpenAnimationHash, isPressed);
-        _doorAnimator.SetBool(CloseAnimationHash, !isPressed);
     }
 
     private void ResolvePressPlate()
@@ -110,23 +89,6 @@ public sealed class DoorButton : MonoBehaviour
             _pressPlate = child;
             _pressPlateCollider = boxCollider;
             return;
-        }
-    }
-
-    private void ResolveDoorAnimator()
-    {
-        Animator[] animators = FindObjectsByType<Animator>(
-            FindObjectsInactive.Include,
-            FindObjectsSortMode.None
-        );
-
-        foreach (Animator animator in animators)
-        {
-            if (animator.gameObject.name == DoorName)
-            {
-                _doorAnimator = animator;
-                return;
-            }
         }
     }
 
