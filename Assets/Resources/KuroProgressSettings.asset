@@ -12,9 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8dcd1f6f7adf4af39ea55d9c0fc52e01, type: 3}
   m_Name: KuroProgressSettings
   m_EditorClassIdentifier: Assembly-CSharp::KuroProgressSettings
-  _level1EndTime: 5
-  _level2EndTime: 10
-  _level3EndTime: 15
-  _maximumKuroTime: 20
-  _clearUpperRatio: 0.2
+  _level1EndTime: 10
+  _level2EndTime: 15
+  _level3EndTime: 20
+  _maximumKuroTime: 30
+  _clearUpperRatio: 0.35
   _blackLowerRatio: 0.8

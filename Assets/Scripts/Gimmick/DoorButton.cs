@@ -8,13 +8,19 @@ using UnityEngine;
 public sealed class DoorButton : MonoBehaviour
 {
     private const string PressPlateName = "button";
-    private const int OverlapCapacity = 32;
+    private const int OverlapCapacity = 64;
+    private const float MinimumSensorHeight = 0.05f;
+    private const float SensorBottomOverlap = 0.05f;
 
     [SerializeField] private float _pressSpeed = 2f;
     [SerializeField] private float _releaseSpeed = 2f;
     [SerializeField, Min(0f)] private float _pressDepth = 0.2f;
-    [SerializeField] private float _detectionHeight = 0.4f;
-    [SerializeField] private float _horizontalInset = 0.05f;
+    [Tooltip("押し板の元の上面から上へ伸ばす、固定検出範囲の高さです。")]
+    [SerializeField, Min(MinimumSensorHeight)] private float _sensorHeight = 0.8f;
+    [Tooltip("押し板の外周へ追加する判定の余裕です。")]
+    [SerializeField, Min(0f)] private float _horizontalTolerance = 0.05f;
+    [Tooltip("物理挙動で一瞬だけ判定から外れた時に、押下を維持する時間です。")]
+    [SerializeField, Min(0f)] private float _releaseGraceTime = 0.1f;
 
     public bool IsPressed { get; private set; }
 
@@ -23,6 +29,7 @@ public sealed class DoorButton : MonoBehaviour
     private BoxCollider _pressPlateCollider;
     private float _releasedLocalY;
     private float _pressedLocalY;
+    private float _lastDetectedFixedTime = float.NegativeInfinity;
 
     /// <summary>
     /// 指定されたColliderが、このボタンの押し板かどうかを返す。
@@ -54,7 +61,15 @@ public sealed class DoorButton : MonoBehaviour
 
     private void FixedUpdate()
     {
-        bool shouldBePressed = HasPresserOnTop();
+        bool detected = HasPresserOnTop();
+        if (detected)
+        {
+            _lastDetectedFixedTime = Time.fixedTime;
+        }
+
+        bool shouldBePressed = detected ||
+            Time.fixedTime - _lastDetectedFixedTime <=
+            Mathf.Max(0f, _releaseGraceTime);
         if (shouldBePressed != IsPressed)
         {
             IsPressed = shouldBePressed;
@@ -100,24 +115,27 @@ public sealed class DoorButton : MonoBehaviour
             Mathf.Abs(_pressPlateCollider.size.y * lossyScale.y) * 0.5f,
             Mathf.Abs(_pressPlateCollider.size.z * lossyScale.z) * 0.5f
         );
-        float detectionHeight = Mathf.Max(0.05f, _detectionHeight);
-        float worldInsetX = Mathf.Min(
-            scaledHalfSize.x - 0.01f,
-            Mathf.Max(0f, _horizontalInset * Mathf.Abs(lossyScale.x))
+        float detectionHeight = Mathf.Max(MinimumSensorHeight, _sensorHeight);
+        float worldToleranceX = Mathf.Max(
+            0f,
+            _horizontalTolerance * Mathf.Abs(lossyScale.x)
         );
-        float worldInsetZ = Mathf.Min(
-            scaledHalfSize.z - 0.01f,
-            Mathf.Max(0f, _horizontalInset * Mathf.Abs(lossyScale.z))
+        float worldToleranceZ = Mathf.Max(
+            0f,
+            _horizontalTolerance * Mathf.Abs(lossyScale.z)
         );
         Vector3 up = _pressPlate.up;
         Vector3 plateCenter = _pressPlate.TransformPoint(_pressPlateCollider.center);
-        Vector3 detectionCenter = plateCenter + up * (
-            scaledHalfSize.y + detectionHeight * 0.5f - 0.02f
+        Vector3 releasedPositionOffset = GetReleasedPositionOffset();
+        Vector3 releasedPlateCenter = plateCenter + releasedPositionOffset;
+        Vector3 releasedPlateTop = releasedPlateCenter + up * scaledHalfSize.y;
+        Vector3 detectionCenter = releasedPlateTop + up * (
+            detectionHeight * 0.5f - SensorBottomOverlap * 0.5f
         );
         Vector3 detectionHalfSize = new Vector3(
-            Mathf.Max(0.01f, scaledHalfSize.x - worldInsetX),
-            detectionHeight * 0.5f + 0.02f,
-            Mathf.Max(0.01f, scaledHalfSize.z - worldInsetZ)
+            scaledHalfSize.x + worldToleranceX,
+            detectionHeight * 0.5f + SensorBottomOverlap * 0.5f,
+            scaledHalfSize.z + worldToleranceZ
         );
 
         int hitCount = Physics.OverlapBoxNonAlloc(
@@ -137,8 +155,13 @@ public sealed class DoorButton : MonoBehaviour
                 continue;
             }
 
-            Transform presser = GetPresserRoot(candidate);
-            if (presser != null && IsCenterAbovePlate(presser))
+            if (candidate.transform.IsChildOf(transform))
+            {
+                continue;
+            }
+
+            if (IsValidPresser(candidate) &&
+                ReachesAbovePlate(candidate, releasedPlateTop, up))
             {
                 return true;
             }
@@ -147,39 +170,51 @@ public sealed class DoorButton : MonoBehaviour
         return false;
     }
 
-    private static Transform GetPresserRoot(Collider candidate)
+    private Vector3 GetReleasedPositionOffset()
+    {
+        float localYOffset = _releasedLocalY - _pressPlate.localPosition.y;
+        Transform parent = _pressPlate.parent;
+        return parent != null
+            ? parent.TransformVector(Vector3.up * localYOffset)
+            : Vector3.up * localYOffset;
+    }
+
+    private static bool IsValidPresser(Collider candidate)
     {
         PlayerMove player = candidate.GetComponentInParent<PlayerMove>();
         if (player != null)
         {
-            return player.transform;
+            return true;
         }
 
         EnemyController enemy = candidate.GetComponentInParent<EnemyController>();
         if (enemy != null)
         {
-            return enemy.transform;
+            // Falling／DeadもColliderを維持するため、穴の底でも押下対象になる。
+            return true;
         }
 
         // WoodenBoxのようなDynamic Rigidbodyを持つ物理オブジェクトも押下対象にする。
         // 名前やTagには依存しないため、同じ構成の箱を増やしても追加設定は不要。
         Rigidbody rigidbody = candidate.attachedRigidbody;
-        return rigidbody != null && !rigidbody.isKinematic
-            ? rigidbody.transform
-            : null;
+        return rigidbody != null && !rigidbody.isKinematic;
     }
 
-    private bool IsCenterAbovePlate(Transform presser)
+    private static bool ReachesAbovePlate(
+        Collider candidate,
+        Vector3 plateTop,
+        Vector3 up
+    )
     {
-        Vector3 localPosition = _pressPlate.InverseTransformPoint(presser.position);
-        Vector3 center = _pressPlateCollider.center;
-        Vector3 halfSize = _pressPlateCollider.size * 0.5f;
-        float inset = Mathf.Max(0f, _horizontalInset);
+        Bounds bounds = candidate.bounds;
+        Vector3 extents = bounds.extents;
+        float projectedExtent =
+            Mathf.Abs(up.x) * extents.x +
+            Mathf.Abs(up.y) * extents.y +
+            Mathf.Abs(up.z) * extents.z;
+        float candidateTop = Vector3.Dot(bounds.center, up) + projectedExtent;
+        float plateTopPosition = Vector3.Dot(plateTop, up);
 
-        return Mathf.Abs(localPosition.x - center.x) <=
-                   Mathf.Max(0.01f, halfSize.x - inset) &&
-               Mathf.Abs(localPosition.z - center.z) <=
-                   Mathf.Max(0.01f, halfSize.z - inset) &&
-               localPosition.y > center.y;
+        return candidateTop >= plateTopPosition - SensorBottomOverlap;
     }
 }

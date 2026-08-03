@@ -16,7 +16,7 @@ public sealed class KuroProgressSettings : ScriptableObject
     public const float DefaultLevel2EndTime = 10f;
     public const float DefaultLevel3EndTime = 15f;
     public const float DefaultMaximumKuroTime = 20f;
-    public const float DefaultClearUpperRatio = 0.2f;
+    public const float DefaultClearUpperRatio = 0.25f;
     public const float DefaultBlackLowerRatio = 0.8f;
 
     [Header("Color Level Times")]

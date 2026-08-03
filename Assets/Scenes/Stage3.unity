@@ -9440,8 +9440,6 @@ MonoBehaviour:
   _pressSpeed: 2
   _releaseSpeed: 2
   _pressDepth: 0.2
-  _detectionHeight: -0.07
-  _horizontalInset: 0.05
 --- !u!1 &919132149613331052
 GameObject:
   m_ObjectHideFlags: 0
